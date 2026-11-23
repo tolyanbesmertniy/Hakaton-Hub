@@ -56,3 +56,7 @@ UI-фреймворк: Jetpack Compose (Material Design 3).
 https://www.figma.com/design/kIa1xooQD6Yp1IuNTqhNl6/Untitled?node-id=0-1&t=VPco5AGZzIVzzoUL-1 
 
 
+
+ https://tolyanbesmertniy.github.io/Hakaton-Hub/
+
+
