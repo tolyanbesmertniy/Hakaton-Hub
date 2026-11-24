@@ -1,3 +1,10 @@
+// Регистрация Service Worker для офлайн-работы
+if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
 // База данных событий с точным временем старта для локальных уведомлений
 const EVENTS_DATA = Array.of(
   {
@@ -107,87 +114,91 @@ const EVENTS_DATA = Array.of(
   }
 );
 
+// Параметры бонусной системы «Шабурята»
 const BONUS_PER_VISIT = 10;
 const SERVICE_WEEKLY_LIMIT = 20;
 const GLOBAL_WEEKLY_LIMIT = 60;
 
-const STORAGE_USERS_KEY = 'college_platform_users_v2';
-const STORAGE_CURRENT_USER_KEY = 'college_platform_current_user_v2';
+// Ключи единого хранилища с «Электронным студенческим»
+const SHARED_PROFILE_KEY = 'studentProfile';
+const HUB_STATE_KEY = 'hackathon_hub_events_state';
 
-let usersDB = {};
-let currentUserKey = null;
+let sharedStudent = null;
+let hubState = {
+  registeredIds: Array.of(),
+  attendedIds: Array.of()
+};
 
-function makeUserKey(name, group) {
-  return name.trim().toLowerCase() + '__' + group.trim().toUpperCase();
-}
-
-function loadStorage() {
+// Загрузка единого профиля (studentProfile) и регистраций Хакатон Хаба
+function loadIntegratedStorage() {
   try {
-    const rawUsers = JSON.parse(localStorage.getItem(STORAGE_USERS_KEY));
-    if (rawUsers && typeof rawUsers === 'object') {
-      usersDB = rawUsers;
+    const rawShared = localStorage.getItem(SHARED_PROFILE_KEY);
+    if (rawShared) {
+      const parsed = JSON.parse(rawShared);
+      if (parsed && parsed.name) {
+        sharedStudent = {
+          id: parsed.id || 'st_001',
+          name: parsed.name,
+          group: parsed.group || '2ИП-7-25',
+          specialty: parsed.specialty || 'Центр программирования и кибербезопасности · поток Альфа',
+          program: parsed.program || '09.02.07 Информационные системы и программирование',
+          status: parsed.status || 'active',
+          photo: parsed.photo || null,
+          contact: parsed.contact || '',
+          shaburyata: typeof parsed.shaburyata === 'number' ? parsed.shaburyata : 0,
+          transactions: Array.isArray(parsed.transactions) ? parsed.transactions : Array.of()
+        };
+      }
     }
   } catch (e) {
-    usersDB = {};
+    sharedStudent = null;
   }
 
-  const demo1Key = makeUserKey('Мария Иванова', '1ИС-2-24');
-  if (!usersDB[demo1Key]) {
-    usersDB[demo1Key] = {
-      key: demo1Key,
-      name: 'Мария Иванова',
-      group: '1ИС-2-24',
-      contact: '@maria_it',
-      balance: 24,
-      weeklyServiceEarned: 0,
-      weeklyTotalEarned: 14,
-      registeredIds: Array.of(3),
-      attendedIds: Array.of(),
-      history: Array.of(
-        { title: 'ИТ.Спорт: тренировка по баскетболу', amount: 8, date: '14 ноября' },
-        { title: 'Медиацентр: одобренный отзыв', amount: 6, date: '12 ноября' },
-        { title: 'Хакатон Хаб: посещение лекции', amount: 10, date: '05 ноября' }
-      )
-    };
+  try {
+    const rawHub = JSON.parse(localStorage.getItem(HUB_STATE_KEY));
+    if (rawHub && typeof rawHub === 'object') {
+      hubState.registeredIds = Array.isArray(rawHub.registeredIds) ? rawHub.registeredIds : Array.of();
+      hubState.attendedIds = Array.isArray(rawHub.attendedIds) ? rawHub.attendedIds : Array.of();
+    }
+  } catch (e) {
+    hubState = { registeredIds: Array.of(), attendedIds: Array.of() };
   }
-
-  const demo2Key = makeUserKey('Дмитрий Соколов', '2ПМ-1-23');
-  if (!usersDB[demo2Key]) {
-    usersDB[demo2Key] = {
-      key: demo2Key,
-      name: 'Дмитрий Соколов',
-      group: '2ПМ-1-23',
-      contact: '@dmitry_pm',
-      balance: 10,
-      weeklyServiceEarned: 10,
-      weeklyTotalEarned: 10,
-      registeredIds: Array.of(1),
-      attendedIds: Array.of(),
-      history: Array.of(
-        { title: 'Хакатон Хаб: посещение митапа', amount: 10, date: '16 ноября' }
-      )
-    };
-  }
-
-  const savedKey = localStorage.getItem(STORAGE_CURRENT_USER_KEY);
-  if (savedKey && usersDB[savedKey]) {
-    currentUserKey = savedKey;
-  }
-
-  saveStorage();
 }
 
-function saveStorage() {
-  localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(usersDB));
-  if (currentUserKey) {
-    localStorage.setItem(STORAGE_CURRENT_USER_KEY, currentUserKey);
+// Сохранение в оба хранилища сразу
+function saveIntegratedStorage() {
+  if (sharedStudent) {
+    localStorage.setItem(SHARED_PROFILE_KEY, JSON.stringify(sharedStudent));
   } else {
-    localStorage.removeItem(STORAGE_CURRENT_USER_KEY);
+    localStorage.removeItem(SHARED_PROFILE_KEY);
   }
+  localStorage.setItem(HUB_STATE_KEY, JSON.stringify(hubState));
 }
 
-function getCurrentUser() {
-  return currentUserKey ? usersDB[currentUserKey] : null;
+// Подсчёт заработанных за последние 7 дней Шабурят по транзакциям
+function getWeeklyEarnedStats() {
+  if (!sharedStudent || !Array.isArray(sharedStudent.transactions)) {
+    return { serviceWeekly: 0, totalWeekly: 0 };
+  }
+
+  const weekAgoMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  let serviceWeekly = 0;
+  let totalWeekly = 0;
+
+  sharedStudent.transactions.forEach(tx => {
+    if (tx.type === 'credit') {
+      const txTime = new Date(tx.date).getTime();
+      if (!isNaN(txTime) && txTime >= weekAgoMs) {
+        const amt = Number(tx.amount) || 0;
+        totalWeekly += amt;
+        if (String(tx.reason || '').indexOf('Хакатон Хаб') !== -1) {
+          serviceWeekly += amt;
+        }
+      }
+    }
+  });
+
+  return { serviceWeekly: serviceWeekly, totalWeekly: totalWeekly };
 }
 
 let currentCategory = 'all';
@@ -216,15 +227,14 @@ function showToast(message) {
   }, 2800);
 }
 
-// Отрисовка верхней панели навигации (ссылки на login.html, register.html или profile.html)
+// Отрисовка верхней панели навигации
 function renderUserPanel() {
   const panelEl = document.getElementById('user-panel');
   if (!panelEl) return;
 
   panelEl.innerHTML = '';
-  const user = getCurrentUser();
 
-  if (!user) {
+  if (!sharedStudent) {
     const authLinks = createEl('div', 'nav-auth-links');
 
     const loginLink = createEl('a', 'btn-login-nav', 'Войти');
@@ -240,19 +250,18 @@ function renderUserPanel() {
     return;
   }
 
-  const bonusPill = createEl('a', 'bonus-pill', '🪙 ' + user.balance + ' Шабурят');
+  const bonusPill = createEl('a', 'bonus-pill', '🪙 ' + sharedStudent.shaburyata + ' Шабурят');
   bonusPill.href = 'profile.html';
   bonusPill.style.textDecoration = 'none';
   panelEl.appendChild(bonusPill);
 
-  const profileChip = createEl('a', 'profile-link-chip', '👤 ' + user.name);
+  const profileChip = createEl('a', 'profile-link-chip', '👤 ' + sharedStudent.name);
   profileChip.href = 'profile.html';
   panelEl.appendChild(profileChip);
 }
 
 function updateCounters() {
-  const user = getCurrentUser();
-  const regIds = user ? user.registeredIds : Array.of();
+  const regIds = sharedStudent ? hubState.registeredIds : Array.of();
   const upcomingCount = EVENTS_DATA.filter(e => !e.isPast && regIds.includes(e.id)).length;
 
   if (navRegCountEl) {
@@ -265,102 +274,93 @@ function updateCounters() {
   }
 }
 
-// Логика входа (на странице login.html)
-function handleLogin(name, group) {
-  const cleanGroup = group.trim().toUpperCase();
+// Вход или регистрация с синхронизацией в общий ключ studentProfile
+function syncLoginOrRegister(name, group, contact) {
   const cleanName = name.trim();
-  if (!cleanGroup || !cleanName) return;
-
-  const key = makeUserKey(cleanName, cleanGroup);
-  if (!usersDB[key]) {
-    showToast('Аккаунт не найден. Перенаправляем на страницу регистрации...');
-    setTimeout(() => {
-      window.location.href = 'register.html';
-    }, 1200);
-    return;
-  }
-
-  currentUserKey = key;
-  saveStorage();
-  window.location.href = 'profile.html';
-}
-
-// Логика регистрации (на странице register.html)
-function handleRegister(name, group, contact) {
   const cleanGroup = group.trim().toUpperCase();
-  const cleanName = name.trim();
-  if (!cleanGroup || !cleanName) return;
+  if (!cleanName || !cleanGroup) return;
 
-  const key = makeUserKey(cleanName, cleanGroup);
-  if (usersDB[key]) {
-    showToast('Такой студент уже зарегистрирован. Выполняем вход...');
-    currentUserKey = key;
-    saveStorage();
-    setTimeout(() => {
-      window.location.href = 'profile.html';
-    }, 1000);
-    return;
-  }
-
-  usersDB[key] = {
-    key: key,
-    name: cleanName,
-    group: cleanGroup,
-    contact: contact ? contact.trim() : '',
-    balance: 0,
-    weeklyServiceEarned: 0,
-    weeklyTotalEarned: 0,
-    registeredIds: Array.of(),
-    attendedIds: Array.of(),
-    history: Array.of()
-  };
-
-  currentUserKey = key;
-  saveStorage();
-  window.location.href = 'profile.html';
+  if (sharedStudent && sharedStudent.name.toLowerCase() === cleanName.toLowerCase()) {
+    sharedStudent.group = cleanGroup;
+    if (contact) sharedStudent.contact = contact.trim();
+  } else {
+    sharedStudent = {
+      id: 'st_' + Date.now(),
+      name: cleanName,
+      group: cleanGroup,
+      specialty: 'Центр программирования и кибербезопасности · поток Альфа',
+      program: '09.02.07 Информационные системы и программирование',
+      status: 'active',
+      photo: null,
+      contact: contact ? contact.trim() : '',
+      shaburyata: 0,
+      transactions: Array.of()
+    };
+hubState = { registeredIds: Array.of(), attendedIds: Array.of() };
 }
-
+saveIntegratedStorage();
+window.location.href = 'profile.html';
+}
 function logoutUser() {
-  currentUserKey = null;
-  saveStorage();
-  window.location.href = 'login.html';
+sharedStudent = null;
+hubState = { registeredIds: Array.of(), attendedIds: Array.of() };
+saveIntegratedStorage();
+window.location.href = 'login.html';
 }
-
 // Рендер страницы профиля (profile.html)
 function renderProfilePage() {
 const profileNameEl = document.getElementById('profile-name');
 if (!profileNameEl) return;
-const user = getCurrentUser();
-if (!user) {
+if (!sharedStudent) {
 window.location.href = 'login.html';
 return;
 }
-const parts = user.name.split(' ');
-const initials = (parts.at(0) ? parts.at(0).charAt(0) : '') + (parts.at(1) ? parts.at(1).charAt(0) : '');
+const parts = sharedStudent.name.split(' ');
+const initials =
+(parts.at(0) ? parts.at(0).charAt(0) : '') + (parts.at(1) ? parts.at(1).charAt(0) : '');
 document.getElementById('profile-avatar').textContent = initials.toUpperCase() || 'СТ';
-profileNameEl.textContent = user.name;
-document.getElementById('profile-group').textContent = 'Группа: ' + user.group;
-document.getElementById('profile-contact').textContent = user.contact ? 'Контакт: ' + user.contact : 'College Platform ID активен';
-document.getElementById('stat-reg-count').textContent = user.registeredIds.length;
-document.getElementById('stat-att-count').textContent = user.attendedIds.length;
-document.getElementById('wallet-balance-num').textContent = user.balance + ' 🪙';
+profileNameEl.textContent = sharedStudent.name;
+document.getElementById('profile-group').textContent = 'Группа: ' + sharedStudent.group;
+const statusLabels = {
+active: 'Активен',
+suspended: 'Приостановлен',
+graduated: 'Выпускник'
+};
+const statusText = statusLabels[sharedStudent.status] || sharedStudent.status;
+document.getElementById('profile-contact').textContent =
+(sharedStudent.contact ? sharedStudent.contact + ' • ' : '') + 'Статус: ' + statusText;
+document.getElementById('stat-reg-count').textContent = hubState.registeredIds.length;
+document.getElementById('stat-att-count').textContent = hubState.attendedIds.length;
+const limits = getWeeklyEarnedStats();
+document.getElementById('wallet-balance-num').textContent = sharedStudent.shaburyata + ' 🪙';
 document.getElementById('wallet-service-limit').textContent =
-user.weeklyServiceEarned + ' / ' + SERVICE_WEEKLY_LIMIT + ' Шабурят';
+limits.serviceWeekly + ' / ' + SERVICE_WEEKLY_LIMIT + ' Шабурят';
 document.getElementById('wallet-total-limit').textContent =
-user.weeklyTotalEarned + ' / ' + GLOBAL_WEEKLY_LIMIT + ' Шабурят';
+limits.totalWeekly + ' / ' + GLOBAL_WEEKLY_LIMIT + ' Шабурят';
 const historyListEl = document.getElementById('wallet-history-list');
 historyListEl.innerHTML = '';
-if (!user.history || user.history.length === 0) {
+if (!sharedStudent.transactions || sharedStudent.transactions.length === 0) {
 historyListEl.appendChild(
-createEl('div', 'empty-state', 'Пока нет начислений. Посетите мероприятие, чтобы получить +10 Шабурят!')
+createEl('div', 'empty-state', 'Пока нет операций. Посетите мероприятие, чтобы получить +10 Шабурят!')
 );
 } else {
-user.history.forEach(item => {
+const sortedTxs = sharedStudent.transactions
+.slice()
+.sort((a, b) => new Date(b.date) - new Date(a.date));
+sortedTxs.forEach(tx => {
 const row = createEl('div', 'history-item');
 const left = createEl('div');
-left.appendChild(createEl('div', 'history-item-title', item.title));
-left.appendChild(createEl('div', 'history-item-date', item.date));
-const right = createEl('div', 'history-item-amount', '+' + item.amount + ' 🪙');
+left.appendChild(createEl('div', 'history-item-title', tx.reason || 'Операция'));
+const d = new Date(tx.date);
+const dateStr = isNaN(d.getTime())
+? String(tx.date)
+: d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' });
+left.appendChild(createEl('div', 'history-item-date', dateStr));
+const sign = tx.type === 'debit' ? '−' : '+';
+const right = createEl('div', 'history-item-amount', sign + tx.amount + ' 🪙');
+if (tx.type === 'debit') {
+right.style.color = 'var(--danger-text)';
+}
 row.appendChild(left);
 row.appendChild(right);
 historyListEl.appendChild(row);
@@ -423,9 +423,9 @@ if (permission === 'granted') setupTimers();
 function exportDatabaseJSON() {
 const dbSnapshot = {
 exportedAt: new Date().toISOString(),
-platform: 'College Platform — Хакатон Хаб',
-currentUser: currentUserKey,
-users: usersDB,
+platform: 'College Platform — Хакатон Хаб + Электронный студенческий',
+studentProfile: sharedStudent,
+hackathonHubState: hubState,
 events: EVENTS_DATA
 };
 const blob = new Blob(Array.of(JSON.stringify(dbSnapshot, null, 2)), {
@@ -449,22 +449,21 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function toggleRegistration(eventId, e) {
 if (e) e.stopPropagation();
-const user = getCurrentUser();
-if (!user) {
+if (!sharedStudent) {
 window.location.href = 'login.html';
 return;
 }
 const event = EVENTS_DATA.find(item => item.id === eventId);
 if (!event) return;
-if (user.registeredIds.includes(eventId)) {
-user.registeredIds = user.registeredIds.filter(id => id !== eventId);
+if (hubState.registeredIds.includes(eventId)) {
+hubState.registeredIds = hubState.registeredIds.filter(id => id !== eventId);
 showToast('Регистрация на «' + event.title + '» отменена');
 } else {
-user.registeredIds.push(eventId);
+hubState.registeredIds.push(eventId);
 scheduleEventNotifications(event);
 showToast('Вы записаны! Подтвердите посещение, чтобы получить +10 Шабурят');
 }
-saveStorage();
+saveIntegratedStorage();
 renderUserPanel();
 updateCounters();
 renderFeed();
@@ -474,44 +473,48 @@ if (detailsView && detailsView.classList.contains('active') && selectedEventId =
 openEventDetails(eventId);
 }
 }
+// Начисление +10 Шабурят в единый кошелёк studentProfile
 function confirmAttendance(eventId, e) {
 if (e) e.stopPropagation();
-const user = getCurrentUser();
-if (!user) {
+if (!sharedStudent) {
 window.location.href = 'login.html';
+return;
+}
+if (sharedStudent.status !== 'active') {
+showToast('Начисление недоступно: статус студента «' + sharedStudent.status + '»');
 return;
 }
 const event = EVENTS_DATA.find(item => item.id === eventId);
 if (!event) return;
-if (user.attendedIds.includes(eventId)) {
+if (hubState.attendedIds.includes(eventId)) {
 showToast('Посещение этого события уже подтверждено');
 return;
 }
-if (user.weeklyServiceEarned + BONUS_PER_VISIT > SERVICE_WEEKLY_LIMIT) {
+const limits = getWeeklyEarnedStats();
+if (limits.serviceWeekly + BONUS_PER_VISIT > SERVICE_WEEKLY_LIMIT) {
 showToast('Достигнут недельный лимит сервиса Хакатон Хаб (20 Шабурят)');
 return;
 }
-if (user.weeklyTotalEarned + BONUS_PER_VISIT > GLOBAL_WEEKLY_LIMIT) {
+if (limits.totalWeekly + BONUS_PER_VISIT > GLOBAL_WEEKLY_LIMIT) {
 showToast('Достигнут общий недельный лимит начислений (60 Шабурят)');
 return;
 }
-user.attendedIds.push(eventId);
-user.balance += BONUS_PER_VISIT;
-user.weeklyServiceEarned += BONUS_PER_VISIT;
-user.weeklyTotalEarned += BONUS_PER_VISIT;
-user.history.unshift({
-title: 'Хакатон Хаб: ' + event.title,
+hubState.attendedIds.push(eventId);
+sharedStudent.shaburyata += BONUS_PER_VISIT;
+sharedStudent.transactions.push({
+id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+date: new Date().toISOString(),
 amount: BONUS_PER_VISIT,
-date: 'Сегодня • подтверждено'
+reason: 'Хакатон Хаб: ' + event.title,
+type: 'credit'
 });
-saveStorage();
+saveIntegratedStorage();
 renderUserPanel();
 renderRegistrations();
-showToast('Посещение подтверждено! Начислено +' + BONUS_PER_VISIT + ' Шабурят 🪙');
+showToast('Начислено +10 Шабурят в единый кошелёк! Баланс: ' + sharedStudent.shaburyata + ' Ш.');
 }
 function buildFeedCard(event) {
-const user = getCurrentUser();
-const isReg = user ? user.registeredIds.includes(event.id) : false;
+const isReg = sharedStudent ? hubState.registeredIds.includes(event.id) : false;
 const card = createEl('article', event.featured ? 'event-card featured' : 'event-card');
 card.addEventListener('click', () => openEventDetails(event.id));
 const topWrap = createEl('div');
@@ -591,8 +594,7 @@ return;
 const event = EVENTS_DATA.find(item => item.id === eventId);
 if (!event) return;
 selectedEventId = eventId;
-const user = getCurrentUser();
-const isReg = user ? user.registeredIds.includes(eventId) : false;
+const isReg = sharedStudent ? hubState.registeredIds.includes(eventId) : false;
 document.getElementById('detail-tag').textContent = event.tagFull;
 document.getElementById('detail-title').textContent = event.title;
 document.getElementById('detail-entry').textContent = event.entry;
@@ -621,8 +623,7 @@ ctaCaption.textContent = 'Бонус +10 Шабурят начислится п�
 switchFeedOrDetails('details');
 }
 function buildRegistrationCard(event) {
-const user = getCurrentUser();
-const isAttended = user ? user.attendedIds.includes(event.id) : false;
+const isAttended = sharedStudent ? hubState.attendedIds.includes(event.id) : false;
 const card = createEl('article', 'event-card');
 card.addEventListener('click', () => openEventDetails(event.id));
 const topWrap = createEl('div');
@@ -676,8 +677,7 @@ function renderRegistrations() {
 const registrationsListEl = document.getElementById('registrations-list');
 if (!registrationsListEl) return;
 registrationsListEl.innerHTML = '';
-const user = getCurrentUser();
-if (!user) {
+if (!sharedStudent) {
 const loginPrompt = createEl('div', 'empty-state');
 loginPrompt.appendChild(
 createEl('p', '', 'Войдите в единую учётную запись, чтобы видеть свои регистрации и копить Шабурята.')
@@ -691,7 +691,7 @@ loginPrompt.appendChild(btn);
 registrationsListEl.appendChild(loginPrompt);
 return;
 }
-const upcomingEvents = EVENTS_DATA.filter(e => !e.isPast && user.registeredIds.includes(e.id));
+const upcomingEvents = EVENTS_DATA.filter(e => !e.isPast && hubState.registeredIds.includes(e.id));
 const pastEvents = EVENTS_DATA.filter(e => e.isPast);
 const listToRender = regTab === 'upcoming' ? upcomingEvents : pastEvents;
 if (listToRender.length === 0) {
@@ -707,7 +707,7 @@ registrationsListEl.appendChild(buildRegistrationCard(event));
 }
 // Инициализация
 document.addEventListener('DOMContentLoaded', () => {
-loadStorage();
+loadIntegratedStorage();
 renderUserPanel();
 updateCounters();
 renderFeed();
@@ -718,16 +718,17 @@ const loginForm = document.getElementById('page-login-form');
 if (loginForm) {
 loginForm.addEventListener('submit', e => {
 e.preventDefault();
-handleLogin(
+syncLoginOrRegister(
 document.getElementById('login-name').value,
-document.getElementById('login-group').value
+document.getElementById('login-group').value,
+''
 );
 });
 }
 // Демо-кнопки на странице login.html
 document.querySelectorAll('.demo-btn').forEach(btn => {
 btn.addEventListener('click', () => {
-handleLogin(btn.dataset.name, btn.dataset.group);
+syncLoginOrRegister(btn.dataset.name, btn.dataset.group, '');
 });
 });
 // Форма на странице register.html
@@ -735,7 +736,7 @@ const registerForm = document.getElementById('page-register-form');
 if (registerForm) {
 registerForm.addEventListener('submit', e => {
 e.preventDefault();
-handleRegister(
+syncLoginOrRegister(
 document.getElementById('reg-name').value,
 document.getElementById('reg-group').value,
 document.getElementById('reg-email').value
