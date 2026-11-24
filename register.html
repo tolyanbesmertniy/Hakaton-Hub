@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Хакатон Хаб — Регистрация</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-badge">Х</span>
+        <span class="brand-name">Хакатон Хаб</span>
+      </a>
+
+      <nav class="nav-tabs">
+        <a href="index.html" class="tab-item">📅 Афиша</a>
+        <a href="registrations.html" class="tab-item">
+          🎟️ Мои регистрации
+          <span class="nav-counter" id="nav-reg-count">0</span>
+        </a>
+      </nav>
+
+      <div class="user-panel" id="user-panel"></div>
+    </div>
+  </header>
+
+  <main class="container auth-page-wrapper">
+    <div class="auth-card">
+      <div class="eyebrow">НОВЫЙ СТУДЕНТ</div>
+      <h1 class="auth-title">Регистрация</h1>
+      <p class="auth-subtitle">Создайте единый профиль для всех сервисов колледжа и кошелька «Шабурята»</p>
+
+      <form id="page-register-form" class="auth-form">
+        <div class="form-group">
+          <label for="reg-name">Имя и фамилия</label>
+          <input type="text" id="reg-name" placeholder="Например: Алексей Смирнов" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-group">Номер группы</label>
+          <input type="text" id="reg-group" placeholder="Например: 1XX-1-11" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Учебная почта или Telegram (необязательно)</label>
+          <input type="text" id="reg-email" placeholder="@username или student@college.ru" />
+        </div>
+        <button type="submit" class="btn-cta">Создать аккаунт</button>
+      </form>
+
+      <div class="auth-switch-link">
+        Уже есть аккаунт? <a href="login.html">Войти</a>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>

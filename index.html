@@ -145,83 +145,11 @@
         </aside>
       </div>
     </section>
-
   </main>
-
-  <!-- Модальное окно авторизации -->
-  <div class="modal-backdrop" id="auth-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div>
-          <div class="eyebrow">COLLEGE PLATFORM ID</div>
-          <h2 class="modal-title">Вход в аккаунт</h2>
-        </div>
-        <button class="modal-close" id="close-auth-modal">✕</button>
-      </div>
-      <p class="modal-subtitle">Единая учётная запись и кошелёк бонусов «Шабурята»</p>
-
-      <form id="auth-form" class="auth-form">
-        <div class="form-group">
-          <label for="auth-name">Имя и фамилия</label>
-          <input type="text" id="auth-name" placeholder="Например: Алексей Смирнов" required />
-        </div>
-        <div class="form-group">
-          <label for="auth-group">Номер группы</label>
-          <input type="text" id="auth-group" placeholder="Например: 1XX-1-11" required />
-        </div>
-        <button type="submit" class="btn-cta">Войти или создать аккаунт</button>
-      </form>
-
-      <div class="demo-accounts">
-        <div class="demo-label">Быстрый вход в тестовый аккаунт:</div>
-        <div class="demo-list">
-          <button type="button" class="demo-btn" data-name="Мария Иванова" data-group="1ИС-2-24">Мария Иванова (гр. 1ИС-2-24)</button>
-          <button type="button" class="demo-btn" data-name="Дмитрий Соколов" data-group="2ПМ-1-23">Дмитрий Соколов (гр. 2ПМ-1-23)</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Модальное окно кошелька Шабурят -->
-  <div class="modal-backdrop" id="wallet-modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div>
-          <div class="eyebrow">ЕДИНЫЙ КОШЕЛЁК</div>
-          <h2 class="modal-title">Мои Шабурята</h2>
-        </div>
-        <button class="modal-close" id="close-wallet-modal">✕</button>
-      </div>
-
-      <div class="wallet-summary">
-        <div class="wallet-balance-box">
-          <span class="wallet-balance-label">Текущий баланс</span>
-          <span class="wallet-balance-value" id="wallet-balance-num">0 🪙</span>
-        </div>
-        <div class="wallet-limits">
-          <div class="limit-row">
-            <span>Лимит Хакатон Хаба за неделю:</span>
-            <strong id="wallet-service-limit">0 / 20</strong>
-          </div>
-          <div class="limit-row">
-            <span>Общий недельный лимит:</span>
-            <strong id="wallet-total-limit">0 / 60</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="wallet-rules-note">
-        +10 Шабурят за подтверждённое посещение мероприятия. Оплата до 30% заказа в «Кампус Фуд».
-      </div>
-
-      <h3 class="history-title">История начислений</h3>
-      <div class="history-list" id="wallet-history-list"></div>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
-
   <script src="script.js"></script>
 </body>
 </html>
+
+
 

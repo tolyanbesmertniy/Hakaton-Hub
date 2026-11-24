@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Хакатон Хаб — Профиль студента</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-badge">Х</span>
+        <span class="brand-name">Хакатон Хаб</span>
+      </a>
+
+      <nav class="nav-tabs">
+        <a href="index.html" class="tab-item">📅 Афиша</a>
+        <a href="registrations.html" class="tab-item">
+          🎟️ Мои регистрации
+          <span class="nav-counter" id="nav-reg-count">0</span>
+        </a>
+      </nav>
+
+      <div class="user-panel" id="user-panel"></div>
+    </div>
+  </header>
+
+  <main class="container main-wrapper">
+    <div class="page-header">
+      <div>
+        <div class="eyebrow">COLLEGE PLATFORM ID</div>
+        <h1 class="page-title">Мой профиль</h1>
+        <p class="page-subtitle">Учётная запись студента и единый кошелёк бонусов</p>
+      </div>
+      <button class="btn-logout-page" id="btn-page-logout">Выйти из аккаунта</button>
+    </div>
+
+    <div class="profile-grid">
+      <!-- Левая колонка: Карточка студента -->
+      <div class="profile-card">
+        <div class="profile-avatar" id="profile-avatar">АС</div>
+        <h2 class="profile-name" id="profile-name">Загрузка...</h2>
+        <div class="profile-group-badge" id="profile-group">Группа: —</div>
+        <div class="profile-contact" id="profile-contact">Контакт не указан</div>
+
+        <div class="profile-stats">
+          <div class="stat-box">
+            <span class="stat-num" id="stat-reg-count">0</span>
+            <span class="stat-label">Записей</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="stat-att-count">0</span>
+            <span class="stat-label">Посещено</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-export-db" id="btn-profile-export">
+          💾 Скачать локальную базу данных (.json)
+        </button>
+      </div>
+
+      <!-- Правая колонка: Кошелёк Шабурят и история -->
+      <div class="wallet-card-section">
+        <div class="wallet-summary">
+          <div class="wallet-balance-box">
+            <div>
+              <div class="eyebrow">ЕДИНЫЙ КОШЕЛЁК</div>
+              <span class="wallet-balance-label">Доступно для списания в «Кампус Фуд»</span>
+            </div>
+            <span class="wallet-balance-value" id="wallet-balance-num">0 🪙</span>
+          </div>
+          <div class="wallet-limits">
+            <div class="limit-row">
+              <span>Лимит сервиса «Хакатон Хаб» за неделю:</span>
+              <strong id="wallet-service-limit">0 / 20 Шабурят</strong>
+            </div>
+            <div class="limit-row">
+              <span>Общий недельный потолок начислений:</span>
+              <strong id="wallet-total-limit">0 / 60 Шабурят</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="wallet-rules-note">
+          За каждое подтверждённое посещение мероприятия начисляется <strong>+10 Шабурят</strong>. Оплата бонусами до 30% от суммы заказа.
+        </div>
+
+        <h3 class="history-title">История начислений</h3>
+        <div class="history-list" id="wallet-history-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
