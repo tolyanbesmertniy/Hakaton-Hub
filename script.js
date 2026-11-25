@@ -1,1365 +1,1017 @@
-:root {
-  --bg-app: #0d1017;
-  --bg-surface: #161b26;
-  --bg-surface-hover: #1e2534;
-  --bg-input: #171c26;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --text-primary: #ffffff;
-  --text-secondary: #8f9bb3;
-  --text-muted: #5c6880;
-  --accent-blue: #5872f5;
-  --accent-blue-hover: #4760e0;
-  --accent-gradient: linear-gradient(135deg, #6277f7 0%, #525ce5 100%);
-  --accent-purple-text: #8ea0ff;
-  --bonus-bg: rgba(245, 158, 11, 0.16);
-  --bonus-text: #fbbf24;
-  --bonus-border: rgba(245, 158, 11, 0.35);
-  --success-bg: rgba(34, 197, 94, 0.14);
-  --success-text: #4ade80;
-  --danger-text: #f87171;
-  --radius-xl: 24px;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-pill: 999px;
-  --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Inter, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  background-color: var(--bg-app);
-  color: var(--text-primary);
-  font-family: var(--font-main);
-  min-height: 100vh;
-  line-height: 1.45;
-}
-
-.container {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background-color: rgba(13, 16, 23, 0.94);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border-subtle);
-  padding-top: env(safe-area-inset-top, 0px);
-}
-
-.topbar-inner {
-  min-height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: var(--text-primary);
-}
-
-.brand-badge {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: var(--accent-gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 16px;
-  color: #ffffff;
-}
-
-.brand-name {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.nav-tabs {
-  display: flex;
-  gap: 8px;
-}
-
-.tab-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  transition: 0.2s;
-}
-
-.tab-item:hover {
-  color: var(--text-primary);
-  background-color: rgba(255, 255, 255, 0.04);
-}
-
-.tab-item.active {
-  background-color: rgba(88, 114, 245, 0.16);
-  color: var(--accent-purple-text);
-  font-weight: 600;
-}
-
-.nav-counter {
-  background-color: var(--accent-blue);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
-}
-
-/* Панель пользователя и баланса в шапке */
-.user-panel {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.btn-login-nav {
-  background-color: var(--accent-blue);
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 9px 16px;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-login-nav:hover {
-  background-color: var(--accent-blue-hover);
-}
-
-.bonus-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: var(--bonus-bg);
-  border: 1px solid var(--bonus-border);
-  color: var(--bonus-text);
-  padding: 7px 13px;
-  border-radius: var(--radius-pill);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.bonus-pill:hover {
-  filter: brightness(1.1);
-}
-
-.user-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  font-size: 13px;
-}
-
-.user-name-text {
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.btn-logout {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 12px;
-  cursor: pointer;
-  padding-left: 6px;
-  border-left: 1px solid var(--border-subtle);
-}
-
-.btn-logout:hover {
-  color: var(--danger-text);
-}
-
-/* Основная область */
-.main-wrapper {
-  padding-top: 32px;
-  padding-bottom: 64px;
-}
-
-.screen-content {
-  display: none;
-  animation: fadeIn 0.2s ease;
-}
-
-.screen-content.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-}
-
-.page-title {
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 4px;
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.controls-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 28px;
-}
-
-.search-box {
-  background-color: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  height: 44px;
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 260px;
-  max-width: 420px;
-}
-
-.search-box input {
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--text-primary);
-  font-size: 14px;
-  width: 100%;
-}
-
-.search-box input::placeholder {
-  color: var(--text-secondary);
-}
-
-.chips-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.chip {
-  padding: 9px 18px;
-  border-radius: var(--radius-pill);
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.chip:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: var(--text-primary);
-}
-
-.chip.active {
-  background-color: var(--accent-blue);
-  color: #ffffff;
-  border-color: var(--accent-blue);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.section-meta {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 18px;
-}
-
-.event-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: transform 0.18s ease, background-color 0.2s, border-color 0.2s;
-}
-
-.event-card:hover {
-  transform: translateY(-3px);
-  background-color: var(--bg-surface-hover);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-
-.event-card.featured {
-  background: var(--accent-gradient);
-  border: none;
-}
-
-.event-card.featured:hover {
-  filter: brightness(1.04);
-}
-
-.card-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.card-tag {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-purple-text);
-  display: inline-block;
-}
-
-.event-card.featured .card-tag {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.card-bonus-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--bonus-text);
-  background-color: var(--bonus-bg);
-  padding: 3px 9px;
-  border-radius: var(--radius-pill);
-}
-
-.event-card.featured .card-bonus-badge {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-}
-
-.card-title {
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.25;
-  margin-bottom: 6px;
-}
-
-.card-desc {
-  font-size: 13.5px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-  line-height: 1.45;
-}
-
-.event-card.featured .card-desc {
-  color: rgba(255, 255, 255, 0.88);
-}
-
-.card-meta-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  margin-bottom: 16px;
-}
-
-.card-meta-list.compact {
-  margin-bottom: 10px;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #cbd5e1;
-}
-
-.event-card.featured .meta-item {
-  color: rgba(255, 255, 255, 0.94);
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  margin-top: auto;
-}
-
-.event-card.featured .card-footer {
-  border-top-color: rgba(255, 255, 255, 0.2);
-}
-
-.organizer {
-  font-size: 12.5px;
-  color: var(--text-secondary);
-}
-
-.reg-organizer {
-  margin-bottom: 12px;
-}
-
-.event-card.featured .organizer {
-  color: rgba(255, 255, 255, 0.88);
-}
-
-.btn-card {
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  font-size: 12.5px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-card-light {
-  background-color: #ffffff;
-  color: #2f3b8f;
-}
-
-.btn-card-primary {
-  background-color: rgba(88, 114, 245, 0.2);
-  color: #9aaaff;
-}
-
-.btn-card-registered {
-  background-color: var(--success-bg);
-  color: var(--success-text);
-}
-
-.btn-confirm-visit {
-  width: 100%;
-  margin-top: 10px;
-  padding: 9px 14px;
-  border-radius: var(--radius-md);
-  background-color: var(--bonus-bg);
-  border: 1px solid var(--bonus-border);
-  color: var(--bonus-text);
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-confirm-visit:hover {
-  filter: brightness(1.12);
-}
-
-.btn-confirm-visit.done {
-  background-color: var(--success-bg);
-  border-color: rgba(74, 222, 128, 0.3);
-  color: var(--success-text);
-  cursor: default;
-}
-
-/* Детали события */
-.nav-header {
-  margin-bottom: 20px;
-}
-
-.back-btn {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 9px 16px;
-  color: var(--text-primary);
-  cursor: pointer;
-  font-size: 13.5px;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.back-btn:hover {
-  background-color: var(--bg-surface-hover);
-}
-
-.details-layout {
-  display: grid;
-grid-template-columns: 1.4fr 1fr;
-gap: 28px;
-align-items: start;
-}
-.hero-banner {
-background: var(--accent-gradient);
-border-radius: var(--radius-xl);
-padding: 28px;
-margin-bottom: 24px;
-}
-.hero-tag {
-font-size: 11px;
-font-weight: 700;
-letter-spacing: 0.08em;
-text-transform: uppercase;
-color: rgba(255, 255, 255, 0.85);
-margin-bottom: 12px;
-}
-.hero-title {
-font-size: 32px;
-font-weight: 700;
-line-height: 1.2;
-margin-bottom: 28px;
-}
-.hero-bottom {
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 12px;
-}
-.hero-badges {
-display: flex;
-gap: 8px;
-flex-wrap: wrap;
-}
-.badge-free,
-.badge-bonus {
-background: rgba(255, 255, 255, 0.18);
-padding: 7px 14px;
-border-radius: var(--radius-pill);
-font-size: 13px;
-font-weight: 600;
-}
-.hero-date {
-font-size: 24px;
-font-weight: 700;
-}
-.about-block {
-background-color: var(--bg-surface);
-border: 1px solid var(--border-subtle);
-border-radius: var(--radius-lg);
-padding: 24px;
-}
-.about-block h3 {
-font-size: 18px;
-font-weight: 600;
-margin-bottom: 10px;
-}
-.about-block p {
-font-size: 14.5px;
-line-height: 1.6;
-color: #cbd5e1;
-}
-.info-card {
-background-color: var(--bg-surface);
-border: 1px solid var(--border-subtle);
-border-radius: var(--radius-xl);
-padding: 24px;
-}
-.info-list {
-display: flex;
-flex-direction: column;
-gap: 16px;
-margin-bottom: 24px;
-}
-.info-row {
-display: flex;
-align-items: flex-start;
-gap: 12px;
-}
-.info-icon {
-width: 38px;
-height: 38px;
-border-radius: 11px;
-background-color: var(--bg-app);
-display: flex;
-align-items: center;
-justify-content: center;
-color: var(--accent-purple-text);
-flex-shrink: 0;
-}
-.info-main {
-font-size: 14.5px;
-font-weight: 600;
-margin-bottom: 2px;
-}
-.info-sub {
-font-size: 12.5px;
-color: var(--text-secondary);
-}
-.reminder-card {
-background-color: var(--bg-app);
-border: 1px solid var(--border-subtle);
-border-radius: var(--radius-md);
-padding: 14px;
-margin-bottom: 20px;
-}
-.reminder-top {
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding-bottom: 10px;
-border-bottom: 1px solid var(--border-subtle);
-margin-bottom: 8px;
-}
-.reminder-left {
-display: flex;
-align-items: center;
-gap: 10px;
-}
-.reminder-title {
-font-size: 13.5px;
-font-weight: 600;
-}
-.reminder-sub {
-font-size: 11.5px;
-color: var(--text-secondary);
-}
-.reminder-note {
-font-size: 11px;
-color: var(--text-muted);
-}
-.switch {
-position: relative;
-display: inline-block;
-width: 44px;
-height: 24px;
-}
-.switch input {
-opacity: 0;
-width: 0;
-height: 0;
-}
-.slider {
-position: absolute;
-cursor: pointer;
-inset: 0;
-background-color: #2c3446;
-border-radius: 34px;
-transition: 0.3s;
-}
-.slider:before {
-position: absolute;
-content: "";
-height: 18px;
-width: 18px;
-left: 3px;
-bottom: 3px;
-background-color: white;
-border-radius: 50%;
-transition: 0.3s;
-}
-input:checked + .slider {
-background-color: var(--accent-blue);
-}
-input:checked + .slider:before {
-transform: translateX(20px);
-}
-.btn-cta {
-width: 100%;
-height: 52px;
-border-radius: var(--radius-md);
-background-color: var(--accent-blue);
-color: #ffffff;
-font-size: 15px;
-font-weight: 600;
-border: none;
-display: flex;
-align-items: center;
-justify-content: center;
-position: relative;
-cursor: pointer;
-margin-bottom: 10px;
-transition: 0.2s;
-}
-.btn-cta:hover {
-background-color: var(--accent-blue-hover);
-}
-.btn-cta.registered {
-background-color: var(--success-bg);
-color: var(--success-text);
-border: 1px solid rgba(74, 222, 128, 0.3);
-}
-.btn-cta .arrow {
-position: absolute;
-right: 18px;
-}
-.cta-caption {
-text-align: center;
-font-size: 12px;
-color: var(--text-secondary);
-}
-/* Мои регистрации */
-.segmented-control {
-display: inline-grid;
-grid-template-columns: 1fr 1fr;
-background-color: var(--bg-surface);
-padding: 4px;
-border-radius: var(--radius-md);
-border: 1px solid var(--border-subtle);
-}
-.segment-btn {
-padding: 9px 18px;
-border-radius: 10px;
-border: none;
-background: transparent;
-color: var(--text-secondary);
-font-size: 13px;
-font-weight: 500;
-cursor: pointer;
-transition: 0.2s;
-white-space: nowrap;
-}
-.segment-btn.active {
-background-color: #252c3d;
-color: #ffffff;
-font-weight: 600;
-}
-.alert-banner {
-background: var(--bonus-bg);
-border: 1px solid var(--bonus-border);
-border-radius: var(--radius-md);
-padding: 14px 18px;
-display: flex;
-align-items: center;
-gap: 14px;
-margin-bottom: 24px;
-}
-.alert-icon {
-width: 36px;
-height: 36px;
-border-radius: 10px;
-background-color: rgba(245, 158, 11, 0.25);
-display: flex;
-align-items: center;
-justify-content: center;
-flex-shrink: 0;
-font-size: 18px;
-}
-.alert-title {
-font-size: 14px;
-font-weight: 600;
-color: var(--bonus-text);
-margin-bottom: 2px;
-}
-.alert-sub {
-font-size: 12.5px;
-color: var(--text-secondary);
-}
-.month-label {
-font-size: 11px;
-font-weight: 700;
-letter-spacing: 0.08em;
-text-transform: uppercase;
-color: var(--text-secondary);
-margin-bottom: 12px;
-}
-.reg-card-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 8px;
-}
-.status-pill-green {
-background-color: var(--success-bg);
-color: var(--success-text);
-font-size: 11px;
-font-weight: 600;
-padding: 4px 10px;
-border-radius: var(--radius-pill);
-}
-.reg-actions {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: 14px;
-padding-top: 12px;
-border-top: 1px solid var(--border-subtle);
-font-size: 13px;
-font-weight: 500;
-}
-.link-cancel {
-color: var(--danger-text);
-cursor: pointer;
-}
-.link-details {
-color: var(--accent-purple-text);
-cursor: pointer;
-}
-.empty-state {
-grid-column: 1 / -1;
-text-align: center;
-padding: 48px 16px;
-color: var(--text-secondary);
-font-size: 14px;
-background-color: var(--bg-surface);
-border-radius: var(--radius-lg);
-border: 1px dashed var(--border-subtle);
-}
-.empty-promo {
-margin-top: 40px;
-padding: 20px 24px;
-background-color: var(--bg-surface);
-border-radius: var(--radius-lg);
-border: 1px solid var(--border-subtle);
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 12px;
-}
-.empty-promo-title {
-font-size: 14px;
-font-weight: 600;
-}
-.empty-promo-link {
-color: var(--accent-purple-text);
-font-size: 13.5px;
-font-weight: 600;
-text-decoration: none;
-}
-/* Модальные окна */
-.modal-backdrop {
-position: fixed;
-inset: 0;
-background-color: rgba(0, 0, 0, 0.72);
-backdrop-filter: blur(6px);
-display: none;
-align-items: center;
-justify-content: center;
-padding: 16px;
-z-index: 200;
-}
-.modal-backdrop.open {
-display: flex;
-}
-.modal-card {
-width: 100%;
-max-width: 440px;
-background-color: var(--bg-surface);
-border: 1px solid var(--border-subtle);
-border-radius: var(--radius-xl);
-padding: 24px;
-box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-}
-.modal-header {
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-margin-bottom: 8px;
-}
-.modal-title {
-font-size: 22px;
-font-weight: 700;
-}
-.modal-subtitle {
-font-size: 13px;
-color: var(--text-secondary);
-margin-bottom: 20px;
-}
-.modal-close {
-background: var(--bg-app);
-border: 1px solid var(--border-subtle);
-color: var(--text-secondary);
-width: 32px;
-height: 32px;
-border-radius: 50%;
-cursor: pointer;
-font-size: 14px;
-}
-.auth-form {
-display: flex;
-flex-direction: column;
-gap: 14px;
-}
-.form-group {
-display: flex;
-flex-direction: column;
-gap: 6px;
-}
-.form-group label {
-font-size: 12.5px;
-font-weight: 500;
-color: var(--text-secondary);
-}
-.form-group input {
-height: 44px;
-padding: 0 14px;
-border-radius: var(--radius-md);
-background-color: var(--bg-app);
-border: 1px solid var(--border-subtle);
-color: var(--text-primary);
-font-size: 14px;
-outline: none;
-}
-.form-group input:focus {
-border-color: var(--accent-blue);
-}
-.demo-accounts {
-margin-top: 18px;
-padding-top: 16px;
-border-top: 1px solid var(--border-subtle);
-}
-.demo-label {
-font-size: 12px;
-color: var(--text-secondary);
-margin-bottom: 10px;
-}
-.demo-list {
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
-.demo-btn {
-text-align: left;
-padding: 10px 14px;
-border-radius: var(--radius-md);
-background-color: var(--bg-app);
-border: 1px solid var(--border-subtle);
-color: var(--text-primary);
-font-size: 13px;
-cursor: pointer;
-transition: 0.2s;
-}
-.demo-btn:hover {
-border-color: var(--accent-blue);
-}
-/* Кошелёк Шабурят */
-.wallet-summary {
-background-color: var(--bg-app);
-border: 1px solid var(--border-subtle);
-border-radius: var(--radius-lg);
-padding: 16px;
-margin-bottom: 14px;
-}
-.wallet-balance-box {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding-bottom: 12px;
-margin-bottom: 12px;
-border-bottom: 1px solid var(--border-subtle);
-}
-.wallet-balance-label {
-font-size: 13px;
-color: var(--text-secondary);
-}
-.wallet-balance-value {
-font-size: 24px;
-font-weight: 800;
-color: var(--bonus-text);
-}
-.wallet-limits {
-display: flex;
-flex-direction: column;
-gap: 6px;
-}
-.limit-row {
-display: flex;
-justify-content: space-between;
-font-size: 12.5px;
-color: var(--text-secondary);
-}
-.limit-row strong {
-color: var(--text-primary);
-}
-.wallet-rules-note {
-font-size: 12px;
-color: var(--text-secondary);
-background-color: rgba(88, 114, 245, 0.1);
-border-radius: var(--radius-md);
-padding: 10px 12px;
-margin-bottom: 16px;
-}
-.history-title {
-font-size: 14px;
-font-weight: 600;
-margin-bottom: 10px;
-}
-.history-list {
-max-height: 220px;
-overflow-y: auto;
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
-.history-item {
-display: flex;
-justify-content: space-between;
-align-items: center;
-background-color: var(--bg-app);
-padding: 10px 12px;
-border-radius: var(--radius-md);
-font-size: 12.5px;
-}
-.history-item-title {
-font-weight: 600;
-margin-bottom: 2px;
-}
-.history-item-date {
-font-size: 11px;
-color: var(--text-secondary);
-}
-.history-item-amount {
-font-weight: 700;
-color: var(--success-text);
-}
-.toast {
-position: fixed;
-bottom: 24px;
-right: 24px;
-background-color: #252c3d;
-border: 1px solid var(--border-subtle);
-color: #ffffff;
-padding: 14px 20px;
-border-radius: var(--radius-md);
-font-size: 13.5px;
-font-weight: 500;
-opacity: 0;
-pointer-events: none;
-transform: translateY(10px);
-transition: 0.25s ease;
-z-index: 300;
-box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
-}
-.toast.show {
-opacity: 1;
-transform: translateY(0);
-}
-@media (max-width: 820px) {
-.details-layout {
-grid-template-columns: 1fr;
-}
-}
-@media (max-width: 560px) {
-.topbar {
-    padding-top: max(28px, env(safe-area-inset-top));
+// Регистрация Service Worker для офлайн-работы
+if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+// База данных событий (два хакатона привязаны к кабинкам Команды 2)
+const EVENTS_DATA = Array.of(
+  {
+    id: 1,
+    category: 'Лекция',
+    tagFull: 'ЛЕКЦИЯ / ТЕХНОЛОГИИ',
+    title: 'ИИ: что будет после хайпа',
+    shortDesc: 'О технологиях, которые меняют профессию.',
+    fullDesc: 'Разберём, где искусственный интеллект уже полезен, а где пока больше обещаний. Обсудим реальные кейсы и навыки, которые пригодятся на старте карьеры.',
+    dateList: '17 ноября • 18:30',
+    dateOnly: '17 ноября',
+    dateFull: '17 ноября, вторник',
+    timeRange: '18:30–20:00',
+    shortDate: '17.11',
+    timestamp: '2026-11-17T18:30:00',
+    isoDate: '2026-11-17',
+    location: 'Корпус А, ауд. 301',
+    locationFull: 'Корпус А, аудитория 301',
+    address: 'Университетская, 12',
+    organizer: 'IT-клуб',
+    entry: 'Вход свободный',
+    featured: true,
+    isPast: false,
+    cabinConfig: null
+  },
+  {
+    id: 5,
+    category: 'Хакатон',
+    tagFull: 'ХАКАТОН / РАЗРАБОТКА • АВТО-БРОНЬ КАБИНКИ',
+    title: 'College Hack 2026',
+    shortDesc: '48 часов на создание прототипа. При записи автоматически бронируется Кабинка 101.',
+    fullDesc: 'Командный хакатон по разработке студенческих сервисов. При записи на событие за вашим профилем автоматически закрепляется переговорная Кабинка 101 на 1 этаже.',
+    dateList: '20 ноября • 10:00',
+    dateOnly: '20 ноября',
+    dateFull: '20 ноября, пятница',
+    timeRange: '10:00–12:00',
+    shortDate: '20.11',
+    timestamp: '2026-11-20T10:00:00',
+    isoDate: '2026-11-20',
+    location: '1 этаж, Кабинка 101',
+    locationFull: 'Коворкинг 1 этаж, Кабинка 101 (Переговорная)',
+    address: 'Университетская, 12',
+    organizer: 'Хакатон Хаб',
+    entry: 'По регистрации',
+    featured: false,
+    isPast: false,
+    cabinConfig: {
+      floor: 1,
+      roomId: '101',
+      roomName: 'Кабинка 101',
+      preferredTime: '10:00 – 12:00'
+    }
+  },
+  {
+    id: 6,
+    category: 'Хакатон',
+    tagFull: 'ХАКАТОН / AI & WEB • АВТО-БРОНЬ КАБИНКИ',
+    title: 'AI & Web Sprint',
+    shortDesc: 'Проектирование умных интерфейсов. При записи бронируется Кабинка 202 с доской.',
+    fullDesc: 'Интенсивный хакатон по веб-разработке и ИИ. При регистрации система автоматически бронирует для вас Кабинку 202 с маркерной доской на 2 этаже.',
+    dateList: '21 ноября • 12:00',
+    dateOnly: '21 ноября',
+    dateFull: '21 ноября, суббота',
+    timeRange: '12:00–14:00',
+    shortDate: '21.11',
+    timestamp: '2026-11-21T12:00:00',
+    isoDate: '2026-11-21',
+    location: '2 этаж, Кабинка 202',
+    locationFull: 'Коворкинг 2 этаж, Кабинка 202 (С маркерной доской)',
+    address: 'Университетская, 12',
+    organizer: 'Хакатон Хаб',
+    entry: 'По регистрации',
+    featured: false,
+    isPast: false,
+    cabinConfig: {
+      floor: 2,
+      roomId: '202',
+      roomName: 'Кабинка 202',
+      preferredTime: '12:00 – 14:00'
+    }
+  },
+  {
+    id: 2,
+    category: 'Митап',
+    tagFull: 'МИТАП / ДИЗАЙН',
+    title: 'Дизайн без границ',
+    shortDesc: 'Портфолио, первые проекты и честный фидбэк.',
+    fullDesc: 'Встреча для начинающих продуктовых и графических дизайнеров. Разберём ваши кейсы, обсудим тренды интерфейсов и расскажем, как попасть на первую стажировку.',
+    dateList: '18 ноября • 17:00',
+    dateOnly: '18 ноября',
+    dateFull: '18 ноября, среда',
+    timeRange: '17:00–19:30',
+    shortDate: '18.11',
+    timestamp: '2026-11-18T17:00:00',
+    isoDate: '2026-11-18',
+    location: 'Коворкинг «Точка»',
+    locationFull: 'Коворкинг «Точка», 2 этаж',
+    address: 'Студенческий проспект, 5',
+    organizer: 'Design community',
+    entry: 'Вход свободный',
+    featured: false,
+    isPast: false,
+    cabinConfig: null
+  },
+  {
+    id: 3,
+    category: 'Спорт',
+    tagFull: 'СПОРТ / ТУРНИР',
+    title: 'Кубок по волейболу',
+    shortDesc: 'Поддержи команду своего факультета.',
+    fullDesc: 'Финальные игры межфакультетского турнира по волейболу. Приходи болеть за сборную своего института — зрителей ждут розыгрыши мерча и горячий чай.',
+    dateList: '19 ноября • 16:00',
+    dateOnly: '19 ноября',
+    dateFull: '19 ноября, четверг',
+    timeRange: '16:00–19:00',
+    shortDate: '19.11',
+    timestamp: '2026-11-19T16:00:00',
+    isoDate: '2026-11-19',
+    location: 'Спорткомплекс, зал 1',
+    locationFull: 'Спорткомплекс, игровой зал №1',
+    address: 'Спортивная, 8',
+    organizer: 'Студенческий спортклуб',
+    entry: 'Для всех студентов',
+    featured: false,
+    isPast: false,
+    cabinConfig: null
+  },
+  {
+    id: 4,
+    category: 'Лекция',
+    tagFull: 'ЛЕКЦИЯ / КАРЬЕРА',
+    title: 'Как запустить пет-проект за выходные',
+    shortDesc: 'От идеи до первых пользователей без бюджета.',
+    fullDesc: 'Прошедший воркшоп по быстрому прототипированию и запуску MVP для студенческих команд.',
+    dateList: '10 ноября • 18:00',
+    dateOnly: '10 ноября',
+    dateFull: '10 ноября, вторник',
+    timeRange: '18:00–19:30',
+    shortDate: '10.11',
+    timestamp: '2026-11-10T18:00:00',
+    isoDate: '2026-11-10',
+    location: 'Корпус Б, ауд. 105',
+    locationFull: 'Корпус Б, аудитория 105',
+    address: 'Университетская, 14',
+    organizer: 'Бизнес-инкубатор',
+    entry: 'Вход свободный',
+    featured: false,
+    isPast: true,
+    cabinConfig: null
   }
-.container {
-padding: 0 16px;
-}
-.page-title {
-font-size: 26px;
-}
-.hero-title {
-font-size: 24px;
-}
-.search-box {
-max-width: 100%;
-}
-.toast {
-left: 16px;
-right: 16px;
-text-align: center;
-}
-}
-/* Группировка событий по датам на главной странице */
-.date-group-section {
-  margin-bottom: 32px;
-}
+);
 
-.date-group-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
+// Параметры бонусной системы «Шабурята»
+const BONUS_PER_VISIT = 10;
+const SERVICE_WEEKLY_LIMIT = 20;
+const GLOBAL_WEEKLY_LIMIT = 60;
 
-.date-group-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
+// Ключи единого хранилища («Электронный студенческий» + «Хакатон Хаб» + «Бронь Кабинки»)
+const SHARED_PROFILE_KEY = 'studentProfile';
+const HUB_STATE_KEY = 'hackathon_hub_events_state';
+const CABINS_ROOMS_KEY = 'it_moscow_rooms';
+const CABINS_BOOKINGS_KEY = 'it_moscow_bookings';
 
-.date-group-line {
-  flex: 1;
-  height: 1px;
-  background-color: var(--border-subtle);
-}
+// Базовая структура кабинок Команды 2 (на случай, если сервис «Бронь Кабинки» ещё не открывался)
+const FALLBACK_CABINS_DB = {
+  1: Array.of(
+    {
+      id: '101',
+      name: 'Кабинка 101',
+      type: 'Переговорная для мини-команды',
+      capacity: 4,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'free', label: 'Свободно' },
+        { time: '12:00 – 14:00', status: 'busy', label: 'Занято (Консультация по БД)' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    },
+    {
+      id: '102',
+      name: 'Кабинка 102',
+      type: 'Акустическая капсула для созвонов',
+      capacity: 1,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'busy', label: 'Занято (Онлайн-защита)' },
+        { time: '12:00 – 14:00', status: 'free', label: 'Свободно' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    }
+  ),
+  2: Array.of(
+    {
+      id: '201',
+      name: 'Кабинка 201',
+      type: 'Индивидуальное место с монитором',
+      capacity: 1,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'busy', label: 'Занято (Сдача практики)' },
+        { time: '12:00 – 14:00', status: 'free', label: 'Свободно' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    },
+    {
+      id: '202',
+      name: 'Кабинка 202',
+      type: 'Переговорная с маркерной доской',
+      capacity: 4,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'free', label: 'Свободно' },
+        { time: '12:00 – 14:00', status: 'free', label: 'Свободно' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    }
+  )
+};
 
-/* Кнопка теста локального уведомления в карточке события */
-.btn-test-notify {
-  width: 100%;
-  margin-top: 10px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background-color: rgba(88, 114, 245, 0.14);
-  border: 1px solid rgba(88, 114, 245, 0.3);
-  color: var(--accent-purple-text);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
+let sharedStudent = null;
+let hubState = {
+  registeredIds: Array.of(),
+  attendedIds: Array.of(),
+  cabinBookingsByEvent: {} // { eventId: bookingId }
+};
 
-.btn-test-notify:hover {
-  background-color: rgba(88, 114, 245, 0.24);
-}
+function loadIntegratedStorage() {
+  try {
+    const rawShared = localStorage.getItem(SHARED_PROFILE_KEY);
+    if (rawShared) {
+      const parsed = JSON.parse(rawShared);
+      if (parsed && parsed.name) {
+        sharedStudent = {
+          id: parsed.id || 'st_001',
+          name: parsed.name,
+          group: parsed.group || '2ИП-7-25',
+          specialty: parsed.specialty || 'Центр программирования и кибербезопасности · поток Альфа',
+          program: parsed.program || '09.02.07 Информационные системы и программирование',
+          status: parsed.status || 'active',
+          photo: parsed.photo || null,
+          contact: parsed.contact || '',
+          shaburyata: typeof parsed.shaburyata === 'number' ? parsed.shaburyata : 0,
+          transactions: Array.isArray(parsed.transactions) ? parsed.transactions : Array.of()
+        };
+      }
+    }
+  } catch (e) {
+    sharedStudent = null;
+  }
 
-/* Кнопка скачивания локальной JSON-базы в кошельке */
-.btn-export-db {
-  width: 100%;
-  margin-top: 14px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background-color: var(--bg-app);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-export-db:hover {
-  border-color: var(--accent-blue);
-  color: var(--text-primary);
-}
-
-/* Страницы входа, регистрации и профиля */
-.auth-page-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 40px;
-  padding-bottom: 64px;
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 440px;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: 28px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-}
-
-.auth-title {
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.auth-subtitle {
-  font-size: 13.5px;
-  color: var(--text-secondary);
-  margin-bottom: 22px;
-}
-
-.auth-switch-link {
-  text-align: center;
-  margin-top: 16px;
-  font-size: 13.5px;
-  color: var(--text-secondary);
-}
-
-.auth-switch-link a {
-  color: var(--accent-purple-text);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.auth-switch-link a:hover {
-  text-decoration: underline;
-}
-
-.nav-auth-links {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-register-nav {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  border-radius: var(--radius-md);
-  padding: 9px 14px;
-  font-size: 13.5px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: 0.2s;
-}
-
-.btn-register-nav:hover {
-  border-color: var(--accent-blue);
-}
-
-.profile-link-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  padding: 6px 14px;
-  border-radius: var(--radius-pill);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-decoration: none;
-  transition: 0.2s;
-}
-
-.profile-link-chip:hover {
-  border-color: var(--accent-blue);
-}
-
-.profile-grid {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.profile-card,
-.wallet-card-section {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: 24px;
-}
-
-.profile-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.profile-avatar {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: var(--accent-gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 14px;
-}
-
-.profile-name {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.profile-group-badge {
-  background-color: rgba(88, 114, 245, 0.16);
-  color: var(--accent-purple-text);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  margin-bottom: 8px;
-}
-
-.profile-contact {
-  font-size: 12.5px;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-}
-
-.profile-stats {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.stat-box {
-  background-color: var(--bg-app);
-  padding: 12px;
-  border-radius: var(--radius-md);
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-num {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.stat-label {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.btn-logout-page {
-  background-color: rgba(248, 113, 113, 0.14);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  color: var(--danger-text);
-  border-radius: var(--radius-md);
-  padding: 10px 18px;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-@media (max-width: 780px) {
-  .profile-grid {
-    grid-template-columns: 1fr;
+  try {
+    const rawHub = JSON.parse(localStorage.getItem(HUB_STATE_KEY));
+    if (rawHub && typeof rawHub === 'object') {
+      hubState.registeredIds = Array.isArray(rawHub.registeredIds) ? rawHub.registeredIds : Array.of();
+      hubState.attendedIds = Array.isArray(rawHub.attendedIds) ? rawHub.attendedIds : Array.of();
+      hubState.cabinBookingsByEvent =
+        rawHub.cabinBookingsByEvent && typeof rawHub.cabinBookingsByEvent === 'object'
+          ? rawHub.cabinBookingsByEvent
+          : {};
+    }
+  } catch (e) {
+    hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
   }
 }
+
+function saveIntegratedStorage() {
+  if (sharedStudent) {
+    localStorage.setItem(SHARED_PROFILE_KEY, JSON.stringify(sharedStudent));
+  } else {
+    localStorage.removeItem(SHARED_PROFILE_KEY);
+  }
+  localStorage.setItem(HUB_STATE_KEY, JSON.stringify(hubState));
+}
+
+// ================= ИНТЕГРАЦИЯ С СЕРВИСОМ «БРОНЬ КАБИНКИ» (Команда 2) =================
+function bookCabinForHackathon(event) {
+  if (!event.cabinConfig || !sharedStudent) return null;
+let roomsDb = null;
+let userBookings = Array.of();
+try {
+roomsDb = JSON.parse(localStorage.getItem(CABINS_ROOMS_KEY));
+} catch (e) {
+roomsDb = null;
+}
+if (!roomsDb || typeof roomsDb !== 'object') {
+roomsDb = JSON.parse(JSON.stringify(FALLBACK_CABINS_DB));
+}
+try {
+const parsedBookings = JSON.parse(localStorage.getItem(CABINS_BOOKINGS_KEY));
+if (Array.isArray(parsedBookings)) userBookings = parsedBookings;
+} catch (e) {
+userBookings = Array.of();
+}
+const cfg = event.cabinConfig;
+const floorRooms = roomsDb[cfg.floor] || Array.of();
+const room = floorRooms.find(r => r.id === cfg.roomId);
+if (!room || !Array.isArray(room.slots)) return null;
+// Ищем предпочтительный слот или первый свободный слот в этой кабинке
+let targetSlot = room.slots.find(s => s.time === cfg.preferredTime && s.status === 'free');
+if (!targetSlot) {
+targetSlot = room.slots.find(s => s.status === 'free');
+}
+if (!targetSlot) return null;
+const purposeText =
+'Хакатон «' + event.title + '» (' + sharedStudent.name + ', гр. ' + sharedStudent.group + ')';
+targetSlot.status = 'booked';
+targetSlot.label = 'Забронировано (' + purposeText + ')';
+const newBooking = {
+id: Date.now(),
+roomId: room.id,
+roomName: room.name,
+floor: cfg.floor,
+date: event.isoDate,
+time: targetSlot.time,
+bookedSlots: Array.of(targetSlot.time),
+purpose: purposeText,
+studentId: sharedStudent.id,
+studentName: sharedStudent.name,
+studentGroup: sharedStudent.group,
+eventId: event.id
+};
+userBookings.unshift(newBooking);
+localStorage.setItem(CABINS_ROOMS_KEY, JSON.stringify(roomsDb));
+localStorage.setItem(CABINS_BOOKINGS_KEY, JSON.stringify(userBookings));
+hubState.cabinBookingsByEvent[event.id] = newBooking;
+return newBooking;
+}
+function cancelCabinForHackathon(eventId) {
+const savedBooking = hubState.cabinBookingsByEvent[eventId];
+if (!savedBooking) return;
+try {
+const roomsDb = JSON.parse(localStorage.getItem(CABINS_ROOMS_KEY));
+const userBookings = JSON.parse(localStorage.getItem(CABINS_BOOKINGS_KEY));
+if (roomsDb && roomsDb[savedBooking.floor]) {
+const room = roomsDb[savedBooking.floor].find(r => r.id === savedBooking.roomId);
+if (room && Array.isArray(room.slots)) {
+room.slots.forEach(slot => {
+if (slot.time === savedBooking.time) {
+slot.status = 'free';
+slot.label = 'Свободно';
+}
+});
+}
+localStorage.setItem(CABINS_ROOMS_KEY, JSON.stringify(roomsDb));
+}
+if (Array.isArray(userBookings)) {
+const updatedBookings = userBookings.filter(b => b.id !== savedBooking.id);
+localStorage.setItem(CABINS_BOOKINGS_KEY, JSON.stringify(updatedBookings));
+}
+} catch (e) {
+// игнорируем ошибки парсинга
+}
+delete hubState.cabinBookingsByEvent[eventId];
+}
+// Подсчёт заработанных за последние 7 дней Шабурят
+function getWeeklyEarnedStats() {
+if (!sharedStudent || !Array.isArray(sharedStudent.transactions)) {
+return { serviceWeekly: 0, totalWeekly: 0 };
+}
+const weekAgoMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
+let serviceWeekly = 0;
+let totalWeekly = 0;
+sharedStudent.transactions.forEach(tx => {
+if (tx.type === 'credit') {
+const txTime = new Date(tx.date).getTime();
+if (!isNaN(txTime) && txTime >= weekAgoMs) {
+const amt = Number(tx.amount) || 0;
+totalWeekly += amt;
+if (String(tx.reason || '').indexOf('Хакатон Хаб') !== -1) {
+serviceWeekly += amt;
+}
+}
+}
+});
+return { serviceWeekly: serviceWeekly, totalWeekly: totalWeekly };
+}
+let currentCategory = 'all';
+let searchQuery = '';
+let selectedEventId = 1;
+let regTab = 'upcoming';
+const toastEl = document.getElementById('toast');
+const navRegCountEl = document.getElementById('nav-reg-count');
+function createEl(tag, className, text) {
+const el = document.createElement(tag);
+if (className) el.className = className;
+if (text !== undefined && text !== null) el.textContent = text;
+return el;
+}
+let toastTimer;
+function showToast(message) {
+if (!toastEl) return;
+toastEl.textContent = message;
+toastEl.classList.add('show');
+clearTimeout(toastTimer);
+toastTimer = setTimeout(() => {
+toastEl.classList.remove('show');
+}, 3400);
+}
+// Отрисовка верхней панели навигации
+function renderUserPanel() {
+const panelEl = document.getElementById('user-panel');
+if (!panelEl) return;
+panelEl.innerHTML = '';
+if (!sharedStudent) {
+const authLinks = createEl('div', 'nav-auth-links');
+const loginLink = createEl('a', 'btn-login-nav', 'Войти');
+loginLink.href = 'login.html';
+loginLink.style.textDecoration = 'none';
+const regLink = createEl('a', 'btn-register-nav', 'Регистрация');
+regLink.href = 'register.html';
+authLinks.appendChild(loginLink);
+authLinks.appendChild(regLink);
+panelEl.appendChild(authLinks);
+return;
+}
+const bonusPill = createEl('a', 'bonus-pill', '🪙 ' + sharedStudent.shaburyata + ' Шабурят');
+bonusPill.href = 'profile.html';
+bonusPill.style.textDecoration = 'none';
+panelEl.appendChild(bonusPill);
+const profileChip = createEl('a', 'profile-link-chip', '👤 ' + sharedStudent.name);
+profileChip.href = 'profile.html';
+panelEl.appendChild(profileChip);
+}
+function updateCounters() {
+const regIds = sharedStudent ? hubState.registeredIds : Array.of();
+const upcomingCount = EVENTS_DATA.filter(e => !e.isPast && regIds.includes(e.id)).length;
+if (navRegCountEl) {
+navRegCountEl.textContent = upcomingCount;
+navRegCountEl.style.display = upcomingCount > 0 ? 'inline-block' : 'none';
+}
+const segUpcomingEl = document.getElementById('seg-upcoming');
+if (segUpcomingEl) {
+segUpcomingEl.textContent = 'Предстоящие • ' + upcomingCount;
+}
+}
+function syncLoginOrRegister(name, group, contact) {
+const cleanName = name.trim();
+const cleanGroup = group.trim().toUpperCase();
+if (!cleanName || !cleanGroup) return;
+if (sharedStudent && sharedStudent.name.toLowerCase() === cleanName.toLowerCase()) {
+sharedStudent.group = cleanGroup;
+if (contact) sharedStudent.contact = contact.trim();
+} else {
+sharedStudent = {
+id: 'st_' + Date.now(),
+name: cleanName,
+group: cleanGroup,
+specialty: 'Центр программирования и кибербезопасности · поток Альфа',
+program: '09.02.07 Информационные системы и программирование',
+status: 'active',
+photo: null,
+contact: contact ? contact.trim() : '',
+shaburyata: 0,
+transactions: Array.of()
+};
+hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
+}
+saveIntegratedStorage();
+window.location.href = 'profile.html';
+}
+function logoutUser() {
+sharedStudent = null;
+hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
+saveIntegratedStorage();
+window.location.href = 'login.html';
+}
+// Рендер страницы профиля (profile.html)
+function renderProfilePage() {
+const profileNameEl = document.getElementById('profile-name');
+if (!profileNameEl) return;
+if (!sharedStudent) {
+window.location.href = 'login.html';
+return;
+}
+const parts = sharedStudent.name.split(' ');
+const initials =
+(parts.at(0) ? parts.at(0).charAt(0) : '') + (parts.at(1) ? parts.at(1).charAt(0) : '');
+document.getElementById('profile-avatar').textContent = initials.toUpperCase() || 'СТ';
+profileNameEl.textContent = sharedStudent.name;
+document.getElementById('profile-group').textContent = 'Группа: ' + sharedStudent.group;
+const activeCabins = Object.values(hubState.cabinBookingsByEvent || {});
+const cabinsSummary =
+activeCabins.length > 0
+? ' • Бронь: ' + activeCabins.map(c => c.roomName + ' (' + c.time + ')').join(', ')
+: '';
+document.getElementById('profile-contact').textContent =
+(sharedStudent.contact ? sharedStudent.contact + ' • ' : '') +
+'Статус: ' +
+sharedStudent.status +
+cabinsSummary;
+document.getElementById('stat-reg-count').textContent = hubState.registeredIds.length;
+document.getElementById('stat-att-count').textContent = hubState.attendedIds.length;
+const limits = getWeeklyEarnedStats();
+document.getElementById('wallet-balance-num').textContent = sharedStudent.shaburyata + ' 🪙';
+document.getElementById('wallet-service-limit').textContent =
+limits.serviceWeekly + ' / ' + SERVICE_WEEKLY_LIMIT + ' Шабурят';
+document.getElementById('wallet-total-limit').textContent =
+limits.totalWeekly + ' / ' + GLOBAL_WEEKLY_LIMIT + ' Шабурят';
+const historyListEl = document.getElementById('wallet-history-list');
+historyListEl.innerHTML = '';
+if (!sharedStudent.transactions || sharedStudent.transactions.length === 0) {
+historyListEl.appendChild(
+createEl('div', 'empty-state', 'Пока нет операций. Посетите мероприятие, чтобы получить +10 Шабурят!')
+);
+} else {
+const sortedTxs = sharedStudent.transactions
+.slice()
+.sort((a, b) => new Date(b.date) - new Date(a.date));
+sortedTxs.forEach(tx => {
+const row = createEl('div', 'history-item');
+const left = createEl('div');
+left.appendChild(createEl('div', 'history-item-title', tx.reason || 'Операция'));
+const d = new Date(tx.date);
+const dateStr = isNaN(d.getTime())
+? String(tx.date)
+: d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' });
+left.appendChild(createEl('div', 'history-item-date', dateStr));
+const sign = tx.type === 'debit' ? '−' : '+';
+const right = createEl('div', 'history-item-amount', sign + tx.amount + ' 🪙');
+if (tx.type === 'debit') {
+right.style.color = 'var(--danger-text)';
+}
+row.appendChild(left);
+row.appendChild(right);
+historyListEl.appendChild(row);
+});
+}
+}
+// Системные локальные уведомления
+let scheduledTimers = Array.of();
+function sendSystemNotification(title, bodyText) {
+if (window.AndroidNative && typeof window.AndroidNative.showNotification === 'function') {
+window.AndroidNative.showNotification(title, bodyText);
+return;
+}
+if (!('Notification' in window)) {
+showToast(title + ': ' + bodyText);
+return;
+}
+if (Notification.permission === 'granted') {
+new Notification(title, { body: bodyText });
+} else {
+showToast(title + ': ' + bodyText);
+}
+}
+function scheduleEventNotifications(event) {
+const toggleEl = document.getElementById('detail-reminder-toggle');
+if (toggleEl && !toggleEl.checked) return;
+if (!('Notification' in window)) return;
+const setupTimers = () => {
+const startMs = new Date(event.timestamp).getTime();
+const nowMs = Date.now();
+const dayBeforeMs = startMs - 24 * 60 * 60 * 1000;
+const hourBeforeMs = startMs - 60 * 60 * 1000;
+if (dayBeforeMs > nowMs) {
+const t1 = setTimeout(() => {
+sendSystemNotification(
+'Завтра: ' + event.title,
+'Напоминаем за день до начала! Встречаемся ' + event.dateList + ' (' + event.location + ').'
+);
+}, Math.min(dayBeforeMs - nowMs, 2147483647));
+scheduledTimers.push(t1);
+}
+if (hourBeforeMs > nowMs) {
+const t2 = setTimeout(() => {
+sendSystemNotification(
+'Через 1 час: ' + event.title,
+'Мероприятие начнётся в ' + event.timeRange + '. Место: ' + event.location
+);
+}, Math.min(hourBeforeMs - nowMs, 2147483647));
+scheduledTimers.push(t2);
+}
+};
+if (Notification.permission === 'granted') {
+setupTimers();
+} else if (Notification.permission !== 'denied') {
+Notification.requestPermission().then(permission => {
+if (permission === 'granted') setupTimers();
+});
+}
+}
+function exportDatabaseJSON() {
+const dbSnapshot = {
+exportedAt: new Date().toISOString(),
+platform: 'College Platform — Хакатон Хаб + Электронный студенческий + Бронь Кабинки',
+studentProfile: sharedStudent,
+hackathonHubState: hubState,
+cabinBookings: JSON.parse(localStorage.getItem(CABINS_BOOKINGS_KEY) || '[]'),
+events: EVENTS_DATA
+};
+const blob = new Blob(Array.of(JSON.stringify(dbSnapshot, null, 2)), {
+type: 'application/json'
+});
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = 'hackathon_hub_database.json';
+link.click();
+URL.revokeObjectURL(url);
+showToast('Локальная база данных (JSON) сохранена');
+}
+function switchFeedOrDetails(viewName) {
+const feedView = document.getElementById('view-feed');
+const detailsView = document.getElementById('view-details');
+if (!feedView || !detailsView) return;
+feedView.classList.toggle('active', viewName === 'feed');
+detailsView.classList.toggle('active', viewName === 'details');
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+// Запись или отмена регистрации + автоматическая бронь кабинки для хакатона
+function toggleRegistration(eventId, e) {
+if (e) e.stopPropagation();
+if (!sharedStudent) {
+window.location.href = 'login.html';
+return;
+}
+const event = EVENTS_DATA.find(item => item.id === eventId);
+if (!event) return;
+if (hubState.registeredIds.includes(eventId)) {
+hubState.registeredIds = hubState.registeredIds.filter(id => id !== eventId);
+if (event.cabinConfig) {
+cancelCabinForHackathon(eventId);
+showToast('Запись отменена, бронь ' + event.cabinConfig.roomName + ' снята');
+} else {
+showToast('Регистрация на «' + event.title + '» отменена');
+}
+} else {
+hubState.registeredIds.push(eventId);
+scheduleEventNotifications(event);
+if (event.cabinConfig) {
+const booking = bookCabinForHackathon(event);
+if (booking) {
+showToast(
+'Вы записаны! Забронирована ' +
+booking.roomName +
+' (' +
+booking.floor +
+' этаж, ' +
+booking.time +
+') на ваш профиль 🏫'
+);
+} else {
+showToast('Вы записаны на хакатон! (Свободных слотов в кабинке уже нет)');
+}
+} else {
+showToast('Вы записаны! Подтвердите посещение, чтобы получить +10 Шабурят');
+}
+}
+saveIntegratedStorage();
+renderUserPanel();
+updateCounters();
+renderFeed();
+renderRegistrations();
+const detailsView = document.getElementById('view-details');
+if (detailsView && detailsView.classList.contains('active') && selectedEventId === eventId) {
+openEventDetails(eventId);
+}
+}
+function confirmAttendance(eventId, e) {
+if (e) e.stopPropagation();
+if (!sharedStudent) {
+window.location.href = 'login.html';
+return;
+}
+if (sharedStudent.status !== 'active') {
+showToast('Начисление недоступно: статус студента «' + sharedStudent.status + '»');
+return;
+}
+const event = EVENTS_DATA.find(item => item.id === eventId);
+if (!event) return;
+if (hubState.attendedIds.includes(eventId)) {
+showToast('Посещение этого события уже подтверждено');
+return;
+}
+const limits = getWeeklyEarnedStats();
+if (limits.serviceWeekly + BONUS_PER_VISIT > SERVICE_WEEKLY_LIMIT) {
+showToast('Достигнут недельный лимит сервиса Хакатон Хаб (20 Шабурят)');
+return;
+}
+if (limits.totalWeekly + BONUS_PER_VISIT > GLOBAL_WEEKLY_LIMIT) {
+showToast('Достигнут общий недельный лимит начислений (60 Шабурят)');
+return;
+}
+hubState.attendedIds.push(eventId);
+sharedStudent.shaburyata += BONUS_PER_VISIT;
+sharedStudent.transactions.push({
+id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+date: new Date().toISOString(),
+amount: BONUS_PER_VISIT,
+reason: 'Хакатон Хаб: ' + event.title,
+type: 'credit'
+});
+saveIntegratedStorage();
+renderUserPanel();
+renderRegistrations();
+showToast('Начислено +10 Шабурят в единый кошелёк! Баланс: ' + sharedStudent.shaburyata + ' Ш.');
+}
+function buildFeedCard(event) {
+const isReg = sharedStudent ? hubState.registeredIds.includes(event.id) : false;
+const card = createEl('article', event.featured ? 'event-card featured' : 'event-card');
+card.addEventListener('click', () => openEventDetails(event.id));
+const topWrap = createEl('div');
+const topRow = createEl('div', 'card-top-row');
+topRow.appendChild(createEl('span', 'card-tag', event.category.toUpperCase()));
+topRow.appendChild(
+createEl('span', 'card-bonus-badge', event.cabinConfig ? '+10 🪙 • 🏫 Кабинка' : '+10 🪙')
+);
+topWrap.appendChild(topRow);
+topWrap.appendChild(createEl('h2', 'card-title', event.title));
+topWrap.appendChild(createEl('p', 'card-desc', event.shortDesc));
+const metaList = createEl('div', 'card-meta-list');
+metaList.appendChild(createEl('div', 'meta-item', '📅 ' + event.dateList));
+metaList.appendChild(createEl('div', 'meta-item', '📍 ' + event.location));
+topWrap.appendChild(metaList);
+const footer = createEl('div', 'card-footer');
+footer.appendChild(createEl('span', 'organizer', event.organizer));
+let btnClass = event.featured ? 'btn-card btn-card-light' : 'btn-card btn-card-primary';
+let btnText = 'Записаться';
+if (isReg) {
+btnClass = 'btn-card btn-card-registered';
+btnText = 'Вы записаны';
+}
+const btn = createEl('button', btnClass, btnText);
+btn.addEventListener('click', e => toggleRegistration(event.id, e));
+footer.appendChild(btn);
+card.appendChild(topWrap);
+card.appendChild(footer);
+return card;
+}
+function renderFeed() {
+const eventsListEl = document.getElementById('events-list');
+if (!eventsListEl) return;
+eventsListEl.innerHTML = '';
+eventsListEl.className = '';
+const filtered = EVENTS_DATA.filter(event => {
+if (event.isPast) return false;
+const matchesCat = currentCategory === 'all' || event.category === currentCategory;
+const matchesSearch =
+event.title.toLowerCase().includes(searchQuery) ||
+event.shortDesc.toLowerCase().includes(searchQuery) ||
+event.organizer.toLowerCase().includes(searchQuery);
+return matchesCat && matchesSearch;
+});
+if (filtered.length === 0) {
+eventsListEl.appendChild(createEl('div', 'empty-state', 'По вашему запросу событий не найдено'));
+return;
+}
+const groupsMap = {};
+const orderedDates = Array.of();
+filtered.forEach(event => {
+const dateKey = event.dateFull;
+if (!groupsMap[dateKey]) {
+groupsMap[dateKey] = Array.of();
+orderedDates.push(dateKey);
+}
+groupsMap[dateKey].push(event);
+});
+orderedDates.forEach(dateKey => {
+const section = createEl('div', 'date-group-section');
+const header = createEl('div', 'date-group-header');
+header.appendChild(createEl('h3', 'date-group-title', '📅 ' + dateKey));
+header.appendChild(createEl('div', 'date-group-line'));
+section.appendChild(header);
+const grid = createEl('div', 'events-grid');
+groupsMap[dateKey].forEach(event => {
+grid.appendChild(buildFeedCard(event));
+});
+section.appendChild(grid);
+eventsListEl.appendChild(section);
+});
+}
+function openEventDetails(eventId) {
+const detailsView = document.getElementById('view-details');
+if (!detailsView) {
+window.location.href = 'index.html?event=' + eventId;
+return;
+}
+const event = EVENTS_DATA.find(item => item.id === eventId);
+if (!event) return;
+selectedEventId = eventId;
+const isReg = sharedStudent ? hubState.registeredIds.includes(eventId) : false;
+const bookedCabin = hubState.cabinBookingsByEvent[eventId];
+document.getElementById('detail-tag').textContent = event.tagFull;
+document.getElementById('detail-title').textContent = event.title;
+document.getElementById('detail-entry').textContent = event.entry;
+document.getElementById('detail-short-date').textContent = event.shortDate;
+document.getElementById('detail-date').textContent = event.dateFull;
+document.getElementById('detail-time').textContent = event.timeRange;
+document.getElementById('detail-location').textContent = event.locationFull;
+document.getElementById('detail-address').textContent = event.address;
+document.getElementById('detail-organizer').textContent = event.organizer;
+document.getElementById('detail-description').textContent = event.fullDesc;
+const ctaBtn = document.getElementById('detail-cta-btn');
+const ctaText = document.getElementById('detail-cta-text');
+const ctaArrow = document.getElementById('detail-cta-arrow');
+const ctaCaption = document.getElementById('detail-cta-caption');
+if (isReg) {
+ctaBtn.classList.add('registered');
+ctaText.textContent = '✓ Вы записаны (нажмите для отмены)';
+ctaArrow.style.display = 'none';
+ctaCaption.textContent = bookedCabin
+? 'За вами забронирована ' + bookedCabin.roomName + ' (' + bookedCabin.time + ')'
+: 'Подтвердите посещение во вкладке «Мои регистрации» для получения +10 Шабурят';
+} else {
+ctaBtn.classList.remove('registered');
+ctaText.textContent = 'Записаться';
+ctaArrow.style.display = 'inline';
+ctaCaption.textContent = event.cabinConfig
+? 'При записи автоматически забронируется ' + event.cabinConfig.roomName + ' на ваш профиль'
+: 'Бонус +10 Шабурят начислится после подтверждения посещения';
+}
+switchFeedOrDetails('details');
+}
+function buildRegistrationCard(event) {
+const isAttended = sharedStudent ? hubState.attendedIds.includes(event.id) : false;
+const bookedCabin = hubState.cabinBookingsByEvent[event.id];
+const card = createEl('article', 'event-card');
+card.addEventListener('click', () => openEventDetails(event.id));
+const topWrap = createEl('div');
+const header = createEl('div', 'reg-card-header');
+header.appendChild(createEl('span', 'card-tag', event.category.toUpperCase()));
+header.appendChild(
+createEl('span', 'status-pill-green', isAttended ? '✓ Посещение подтверждено' : '✓ Вы записаны')
+);
+topWrap.appendChild(header);
+topWrap.appendChild(createEl('h2', 'card-title', event.title));
+topWrap.appendChild(createEl('p', 'card-desc', event.shortDesc));
+const metaList = createEl('div', 'card-meta-list compact');
+metaList.appendChild(createEl('div', 'meta-item', '📅 ' + event.dateOnly + ' • ' + event.timeRange));
+metaList.appendChild(createEl('div', 'meta-item', '📍 ' + event.location));
+// Показываем статус автоматической брони кабинки для хакатона
+if (bookedCabin) {
+const cabinInfo = createEl(
+'div',
+'meta-item',
+'🏫 Авто-бронь: ' + bookedCabin.roomName + ' (' + bookedCabin.floor + ' этаж, ' + bookedCabin.time + ')'
+);
+cabinInfo.style.color = 'var(--success-text)';
+cabinInfo.style.fontWeight = '600';
+metaList.appendChild(cabinInfo);
+}
+topWrap.appendChild(metaList);
+topWrap.appendChild(createEl('div', 'organizer reg-organizer', event.organizer));
+if (!event.isPast) {
+if (isAttended) {
+const doneBtn = createEl('button', 'btn-confirm-visit done', '🪙 +10 Шабурят начислено');
+doneBtn.addEventListener('click', e => e.stopPropagation());
+topWrap.appendChild(doneBtn);
+} else {
+const confirmBtn = createEl(
+'button',
+'btn-confirm-visit',
+'Подтвердить посещение (+10 Шабурят 🪙)'
+);
+confirmBtn.addEventListener('click', e => confirmAttendance(event.id, e));
+topWrap.appendChild(confirmBtn);
+}
+}
+const actions = createEl('div', 'reg-actions');
+if (!event.isPast && !isAttended) {
+const cancelLink = createEl('span', 'link-cancel', 'Отменить регистрацию');
+cancelLink.addEventListener('click', e => toggleRegistration(event.id, e));
+actions.appendChild(cancelLink);
+} else {
+actions.appendChild(createEl('span'));
+}
+const detailsLink = createEl('span', 'link-details', 'Подробнее');
+detailsLink.addEventListener('click', e => {
+e.stopPropagation();
+openEventDetails(event.id);
+});
+actions.appendChild(detailsLink);
+card.appendChild(topWrap);
+card.appendChild(actions);
+return card;
+}
+function renderRegistrations() {
+const registrationsListEl = document.getElementById('registrations-list');
+if (!registrationsListEl) return;
+registrationsListEl.innerHTML = '';
+if (!sharedStudent) {
+const loginPrompt = createEl('div', 'empty-state');
+loginPrompt.appendChild(
+createEl('p', '', 'Войдите в единую учётную запись, чтобы видеть свои регистрации и копить Шабурята.')
+);
+const btn = createEl('a', 'btn-login-nav', 'Перейти ко входу');
+btn.href = 'login.html';
+btn.style.display = 'inline-block';
+btn.style.marginTop = '14px';
+btn.style.textDecoration = 'none';
+loginPrompt.appendChild(btn);
+registrationsListEl.appendChild(loginPrompt);
+return;
+}
+const upcomingEvents = EVENTS_DATA.filter(e => !e.isPast && hubState.registeredIds.includes(e.id));
+const pastEvents = EVENTS_DATA.filter(e => e.isPast);
+const listToRender = regTab === 'upcoming' ? upcomingEvents : pastEvents;
+if (listToRender.length === 0) {
+const emptyText = regTab === 'upcoming'
+? 'У вас пока нет предстоящих регистраций'
+: 'У вас пока нет прошедших регистраций';
+registrationsListEl.appendChild(createEl('div', 'empty-state', emptyText));
+return;
+}
+listToRender.forEach(event => {
+registrationsListEl.appendChild(buildRegistrationCard(event));
+});
+}
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+loadIntegratedStorage();
+renderUserPanel();
+updateCounters();
+renderFeed();
+renderRegistrations();
+renderProfilePage();
+const loginForm = document.getElementById('page-login-form');
+if (loginForm) {
+loginForm.addEventListener('submit', e => {
+e.preventDefault();
+syncLoginOrRegister(
+document.getElementById('login-name').value,
+document.getElementById('login-group').value,
+''
+);
+});
+}
+document.querySelectorAll('.demo-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+syncLoginOrRegister(btn.dataset.name, btn.dataset.group, '');
+});
+});
+const registerForm = document.getElementById('page-register-form');
+if (registerForm) {
+registerForm.addEventListener('submit', e => {
+e.preventDefault();
+syncLoginOrRegister(
+document.getElementById('reg-name').value,
+document.getElementById('reg-group').value,
+document.getElementById('reg-email').value
+);
+});
+}
+const pageLogoutBtn = document.getElementById('btn-page-logout');
+if (pageLogoutBtn) {
+pageLogoutBtn.addEventListener('click', logoutUser);
+}
+const profileExportBtn = document.getElementById('btn-profile-export');
+if (profileExportBtn) {
+profileExportBtn.addEventListener('click', exportDatabaseJSON);
+}
+const searchInput = document.getElementById('search-input');
+if (searchInput) {
+searchInput.addEventListener('input', e => {
+searchQuery = e.target.value.trim().toLowerCase();
+renderFeed();
+});
+}
+document.querySelectorAll('#category-chips .chip').forEach(chip => {
+chip.addEventListener('click', () => {
+document.querySelectorAll('#category-chips .chip').forEach(c => c.classList.remove('active'));
+chip.classList.add('active');
+currentCategory = chip.dataset.category;
+renderFeed();
+});
+});
+const btnBack = document.getElementById('btn-back');
+if (btnBack) {
+btnBack.addEventListener('click', () => {
+window.history.replaceState({}, '', 'index.html');
+switchFeedOrDetails('feed');
+});
+}
+const detailCtaBtn = document.getElementById('detail-cta-btn');
+if (detailCtaBtn) {
+detailCtaBtn.addEventListener('click', () => {
+toggleRegistration(selectedEventId);
+});
+}
+const reminderCard = document.querySelector('.reminder-card');
+if (reminderCard) {
+const testNotifyBtn = createEl(
+'button',
+'btn-test-notify',
+'🔔 Проверить системное уведомление сейчас'
+);
+testNotifyBtn.type = 'button';
+testNotifyBtn.addEventListener('click', () => {
+const ev = EVENTS_DATA.find(item => item.id === selectedEventId) || EVENTS_DATA.at(0);
+sendSystemNotification(
+'Напоминание (за 1 час): ' + ev.title,
+'Начало в ' + ev.timeRange + ' • ' + ev.location + '. Не забудьте отметить посещение (+10 Шабурят)!'
+);
+});
+reminderCard.appendChild(testNotifyBtn);
+}
+document.querySelectorAll('.segment-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+regTab = btn.dataset.tab;
+renderRegistrations();
+});
+});
+const params = new URLSearchParams(window.location.search);
+const eventParam = Number(params.get('event'));
+if (eventParam && document.getElementById('view-details')) {
+openEventDetails(eventParam);
+}
+});
