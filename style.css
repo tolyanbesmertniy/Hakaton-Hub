@@ -45,14 +45,14 @@ body {
   padding: 0 24px;
 }
 
-/* Верхняя навигация */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 50;
-  background-color: rgba(13, 16, 23, 0.88);
+  background-color: rgba(13, 16, 23, 0.94);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-subtle);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .topbar-inner {
@@ -1088,6 +1088,9 @@ grid-template-columns: 1fr;
 }
 }
 @media (max-width: 560px) {
+.topbar {
+    padding-top: max(28px, env(safe-area-inset-top));
+  }
 .container {
 padding: 0 16px;
 }
