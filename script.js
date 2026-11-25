@@ -5,7 +5,7 @@ if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
   });
 }
 
-// База данных событий с точным временем старта для локальных уведомлений
+// База данных событий (два хакатона привязаны к кабинкам Команды 2)
 const EVENTS_DATA = Array.of(
   {
     id: 1,
@@ -20,13 +20,71 @@ const EVENTS_DATA = Array.of(
     timeRange: '18:30–20:00',
     shortDate: '17.11',
     timestamp: '2026-11-17T18:30:00',
+    isoDate: '2026-11-17',
     location: 'Корпус А, ауд. 301',
     locationFull: 'Корпус А, аудитория 301',
     address: 'Университетская, 12',
     organizer: 'IT-клуб',
     entry: 'Вход свободный',
     featured: true,
-    isPast: false
+    isPast: false,
+    cabinConfig: null
+  },
+  {
+    id: 5,
+    category: 'Хакатон',
+    tagFull: 'ХАКАТОН / РАЗРАБОТКА • АВТО-БРОНЬ КАБИНКИ',
+    title: 'College Hack 2026',
+    shortDesc: '48 часов на создание прототипа. При записи автоматически бронируется Кабинка 101.',
+    fullDesc: 'Командный хакатон по разработке студенческих сервисов. При записи на событие за вашим профилем автоматически закрепляется переговорная Кабинка 101 на 1 этаже.',
+    dateList: '20 ноября • 10:00',
+    dateOnly: '20 ноября',
+    dateFull: '20 ноября, пятница',
+    timeRange: '10:00–12:00',
+    shortDate: '20.11',
+    timestamp: '2026-11-20T10:00:00',
+    isoDate: '2026-11-20',
+    location: '1 этаж, Кабинка 101',
+    locationFull: 'Коворкинг 1 этаж, Кабинка 101 (Переговорная)',
+    address: 'Университетская, 12',
+    organizer: 'Хакатон Хаб',
+    entry: 'По регистрации',
+    featured: false,
+    isPast: false,
+    cabinConfig: {
+      floor: 1,
+      roomId: '101',
+      roomName: 'Кабинка 101',
+      preferredTime: '10:00 – 12:00'
+    }
+  },
+  {
+    id: 6,
+    category: 'Хакатон',
+    tagFull: 'ХАКАТОН / AI & WEB • АВТО-БРОНЬ КАБИНКИ',
+    title: 'AI & Web Sprint',
+    shortDesc: 'Проектирование умных интерфейсов. При записи бронируется Кабинка 202 с доской.',
+    fullDesc: 'Интенсивный хакатон по веб-разработке и ИИ. При регистрации система автоматически бронирует для вас Кабинку 202 с маркерной доской на 2 этаже.',
+    dateList: '21 ноября • 12:00',
+    dateOnly: '21 ноября',
+    dateFull: '21 ноября, суббота',
+    timeRange: '12:00–14:00',
+    shortDate: '21.11',
+    timestamp: '2026-11-21T12:00:00',
+    isoDate: '2026-11-21',
+    location: '2 этаж, Кабинка 202',
+    locationFull: 'Коворкинг 2 этаж, Кабинка 202 (С маркерной доской)',
+    address: 'Университетская, 12',
+    organizer: 'Хакатон Хаб',
+    entry: 'По регистрации',
+    featured: false,
+    isPast: false,
+    cabinConfig: {
+      floor: 2,
+      roomId: '202',
+      roomName: 'Кабинка 202',
+      preferredTime: '12:00 – 14:00'
+    }
   },
   {
     id: 2,
@@ -41,13 +99,15 @@ const EVENTS_DATA = Array.of(
     timeRange: '17:00–19:30',
     shortDate: '18.11',
     timestamp: '2026-11-18T17:00:00',
+    isoDate: '2026-11-18',
     location: 'Коворкинг «Точка»',
     locationFull: 'Коворкинг «Точка», 2 этаж',
     address: 'Студенческий проспект, 5',
     organizer: 'Design community',
     entry: 'Вход свободный',
     featured: false,
-    isPast: false
+    isPast: false,
+    cabinConfig: null
   },
   {
     id: 3,
@@ -62,34 +122,15 @@ const EVENTS_DATA = Array.of(
     timeRange: '16:00–19:00',
     shortDate: '19.11',
     timestamp: '2026-11-19T16:00:00',
+    isoDate: '2026-11-19',
     location: 'Спорткомплекс, зал 1',
     locationFull: 'Спорткомплекс, игровой зал №1',
     address: 'Спортивная, 8',
     organizer: 'Студенческий спортклуб',
     entry: 'Для всех студентов',
     featured: false,
-    isPast: false
-  },
-  {
-    id: 5,
-    category: 'Хакатон',
-    tagFull: 'ХАКАТОН / РАЗРАБОТКА',
-    title: 'College Hack 2026',
-    shortDesc: '48 часов на создание прототипа цифрового сервиса для колледжа.',
-    fullDesc: 'Командный хакатон по разработке студенческих сервисов. Собери команду из 2–4 человек, выбери трек и презентуй готовый прототип жюри.',
-    dateList: '20 ноября • 10:00',
-    dateOnly: '20 ноября',
-    dateFull: '20 ноября, пятница',
-    timeRange: '10:00–20:00',
-    shortDate: '20.11',
-    timestamp: '2026-11-20T10:00:00',
-    location: 'Актовый зал',
-    locationFull: 'Главный корпус, Актовый зал',
-    address: 'Университетская, 12',
-    organizer: 'Хакатон Хаб',
-    entry: 'По регистрации',
-    featured: false,
-    isPast: false
+    isPast: false,
+    cabinConfig: null
   },
   {
     id: 4,
@@ -104,13 +145,15 @@ const EVENTS_DATA = Array.of(
     timeRange: '18:00–19:30',
     shortDate: '10.11',
     timestamp: '2026-11-10T18:00:00',
+    isoDate: '2026-11-10',
     location: 'Корпус Б, ауд. 105',
     locationFull: 'Корпус Б, аудитория 105',
     address: 'Университетская, 14',
     organizer: 'Бизнес-инкубатор',
     entry: 'Вход свободный',
     featured: false,
-    isPast: true
+    isPast: true,
+    cabinConfig: null
   }
 );
 
@@ -119,17 +162,75 @@ const BONUS_PER_VISIT = 10;
 const SERVICE_WEEKLY_LIMIT = 20;
 const GLOBAL_WEEKLY_LIMIT = 60;
 
-// Ключи единого хранилища с «Электронным студенческим»
+// Ключи единого хранилища («Электронный студенческий» + «Хакатон Хаб» + «Бронь Кабинки»)
 const SHARED_PROFILE_KEY = 'studentProfile';
 const HUB_STATE_KEY = 'hackathon_hub_events_state';
+const CABINS_ROOMS_KEY = 'it_moscow_rooms';
+const CABINS_BOOKINGS_KEY = 'it_moscow_bookings';
+
+// Базовая структура кабинок Команды 2 (на случай, если сервис «Бронь Кабинки» ещё не открывался)
+const FALLBACK_CABINS_DB = {
+  1: Array.of(
+    {
+      id: '101',
+      name: 'Кабинка 101',
+      type: 'Переговорная для мини-команды',
+      capacity: 4,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'free', label: 'Свободно' },
+        { time: '12:00 – 14:00', status: 'busy', label: 'Занято (Консультация по БД)' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    },
+    {
+      id: '102',
+      name: 'Кабинка 102',
+      type: 'Акустическая капсула для созвонов',
+      capacity: 1,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'busy', label: 'Занято (Онлайн-защита)' },
+        { time: '12:00 – 14:00', status: 'free', label: 'Свободно' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    }
+  ),
+  2: Array.of(
+    {
+      id: '201',
+      name: 'Кабинка 201',
+      type: 'Индивидуальное место с монитором',
+      capacity: 1,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'busy', label: 'Занято (Сдача практики)' },
+        { time: '12:00 – 14:00', status: 'free', label: 'Свободно' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    },
+    {
+      id: '202',
+      name: 'Кабинка 202',
+      type: 'Переговорная с маркерной доской',
+      capacity: 4,
+      slots: Array.of(
+        { time: '10:00 – 12:00', status: 'free', label: 'Свободно' },
+        { time: '12:00 – 14:00', status: 'free', label: 'Свободно' },
+        { time: '14:00 – 16:00', status: 'free', label: 'Свободно' },
+        { time: '16:00 – 18:00', status: 'free', label: 'Свободно' }
+      )
+    }
+  )
+};
 
 let sharedStudent = null;
 let hubState = {
   registeredIds: Array.of(),
-  attendedIds: Array.of()
+  attendedIds: Array.of(),
+  cabinBookingsByEvent: {} // { eventId: bookingId }
 };
 
-// Загрузка единого профиля (studentProfile) и регистраций Хакатон Хаба
 function loadIntegratedStorage() {
   try {
     const rawShared = localStorage.getItem(SHARED_PROFILE_KEY);
@@ -159,13 +260,16 @@ function loadIntegratedStorage() {
     if (rawHub && typeof rawHub === 'object') {
       hubState.registeredIds = Array.isArray(rawHub.registeredIds) ? rawHub.registeredIds : Array.of();
       hubState.attendedIds = Array.isArray(rawHub.attendedIds) ? rawHub.attendedIds : Array.of();
+      hubState.cabinBookingsByEvent =
+        rawHub.cabinBookingsByEvent && typeof rawHub.cabinBookingsByEvent === 'object'
+          ? rawHub.cabinBookingsByEvent
+          : {};
     }
   } catch (e) {
-    hubState = { registeredIds: Array.of(), attendedIds: Array.of() };
+    hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
   }
 }
 
-// Сохранение в оба хранилища сразу
 function saveIntegratedStorage() {
   if (sharedStudent) {
     localStorage.setItem(SHARED_PROFILE_KEY, JSON.stringify(sharedStudent));
@@ -175,135 +279,195 @@ function saveIntegratedStorage() {
   localStorage.setItem(HUB_STATE_KEY, JSON.stringify(hubState));
 }
 
-// Подсчёт заработанных за последние 7 дней Шабурят по транзакциям
-function getWeeklyEarnedStats() {
-  if (!sharedStudent || !Array.isArray(sharedStudent.transactions)) {
-    return { serviceWeekly: 0, totalWeekly: 0 };
-  }
-
-  const weekAgoMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  let serviceWeekly = 0;
-  let totalWeekly = 0;
-
-  sharedStudent.transactions.forEach(tx => {
-    if (tx.type === 'credit') {
-      const txTime = new Date(tx.date).getTime();
-      if (!isNaN(txTime) && txTime >= weekAgoMs) {
-        const amt = Number(tx.amount) || 0;
-        totalWeekly += amt;
-        if (String(tx.reason || '').indexOf('Хакатон Хаб') !== -1) {
-          serviceWeekly += amt;
-        }
-      }
-    }
-  });
-
-  return { serviceWeekly: serviceWeekly, totalWeekly: totalWeekly };
+// ================= ИНТЕГРАЦИЯ С СЕРВИСОМ «БРОНЬ КАБИНКИ» (Команда 2) =================
+function bookCabinForHackathon(event) {
+  if (!event.cabinConfig || !sharedStudent) return null;
+let roomsDb = null;
+let userBookings = Array.of();
+try {
+roomsDb = JSON.parse(localStorage.getItem(CABINS_ROOMS_KEY));
+} catch (e) {
+roomsDb = null;
 }
-
+if (!roomsDb || typeof roomsDb !== 'object') {
+roomsDb = JSON.parse(JSON.stringify(FALLBACK_CABINS_DB));
+}
+try {
+const parsedBookings = JSON.parse(localStorage.getItem(CABINS_BOOKINGS_KEY));
+if (Array.isArray(parsedBookings)) userBookings = parsedBookings;
+} catch (e) {
+userBookings = Array.of();
+}
+const cfg = event.cabinConfig;
+const floorRooms = roomsDb[cfg.floor] || Array.of();
+const room = floorRooms.find(r => r.id === cfg.roomId);
+if (!room || !Array.isArray(room.slots)) return null;
+// Ищем предпочтительный слот или первый свободный слот в этой кабинке
+let targetSlot = room.slots.find(s => s.time === cfg.preferredTime && s.status === 'free');
+if (!targetSlot) {
+targetSlot = room.slots.find(s => s.status === 'free');
+}
+if (!targetSlot) return null;
+const purposeText =
+'Хакатон «' + event.title + '» (' + sharedStudent.name + ', гр. ' + sharedStudent.group + ')';
+targetSlot.status = 'booked';
+targetSlot.label = 'Забронировано (' + purposeText + ')';
+const newBooking = {
+id: Date.now(),
+roomId: room.id,
+roomName: room.name,
+floor: cfg.floor,
+date: event.isoDate,
+time: targetSlot.time,
+bookedSlots: Array.of(targetSlot.time),
+purpose: purposeText,
+studentId: sharedStudent.id,
+studentName: sharedStudent.name,
+studentGroup: sharedStudent.group,
+eventId: event.id
+};
+userBookings.unshift(newBooking);
+localStorage.setItem(CABINS_ROOMS_KEY, JSON.stringify(roomsDb));
+localStorage.setItem(CABINS_BOOKINGS_KEY, JSON.stringify(userBookings));
+hubState.cabinBookingsByEvent[event.id] = newBooking;
+return newBooking;
+}
+function cancelCabinForHackathon(eventId) {
+const savedBooking = hubState.cabinBookingsByEvent[eventId];
+if (!savedBooking) return;
+try {
+const roomsDb = JSON.parse(localStorage.getItem(CABINS_ROOMS_KEY));
+const userBookings = JSON.parse(localStorage.getItem(CABINS_BOOKINGS_KEY));
+if (roomsDb && roomsDb[savedBooking.floor]) {
+const room = roomsDb[savedBooking.floor].find(r => r.id === savedBooking.roomId);
+if (room && Array.isArray(room.slots)) {
+room.slots.forEach(slot => {
+if (slot.time === savedBooking.time) {
+slot.status = 'free';
+slot.label = 'Свободно';
+}
+});
+}
+localStorage.setItem(CABINS_ROOMS_KEY, JSON.stringify(roomsDb));
+}
+if (Array.isArray(userBookings)) {
+const updatedBookings = userBookings.filter(b => b.id !== savedBooking.id);
+localStorage.setItem(CABINS_BOOKINGS_KEY, JSON.stringify(updatedBookings));
+}
+} catch (e) {
+// игнорируем ошибки парсинга
+}
+delete hubState.cabinBookingsByEvent[eventId];
+}
+// Подсчёт заработанных за последние 7 дней Шабурят
+function getWeeklyEarnedStats() {
+if (!sharedStudent || !Array.isArray(sharedStudent.transactions)) {
+return { serviceWeekly: 0, totalWeekly: 0 };
+}
+const weekAgoMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
+let serviceWeekly = 0;
+let totalWeekly = 0;
+sharedStudent.transactions.forEach(tx => {
+if (tx.type === 'credit') {
+const txTime = new Date(tx.date).getTime();
+if (!isNaN(txTime) && txTime >= weekAgoMs) {
+const amt = Number(tx.amount) || 0;
+totalWeekly += amt;
+if (String(tx.reason || '').indexOf('Хакатон Хаб') !== -1) {
+serviceWeekly += amt;
+}
+}
+}
+});
+return { serviceWeekly: serviceWeekly, totalWeekly: totalWeekly };
+}
 let currentCategory = 'all';
 let searchQuery = '';
 let selectedEventId = 1;
 let regTab = 'upcoming';
-
 const toastEl = document.getElementById('toast');
 const navRegCountEl = document.getElementById('nav-reg-count');
-
 function createEl(tag, className, text) {
-  const el = document.createElement(tag);
-  if (className) el.className = className;
-  if (text !== undefined && text !== null) el.textContent = text;
-  return el;
+const el = document.createElement(tag);
+if (className) el.className = className;
+if (text !== undefined && text !== null) el.textContent = text;
+return el;
 }
-
 let toastTimer;
 function showToast(message) {
-  if (!toastEl) return;
-  toastEl.textContent = message;
-  toastEl.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toastEl.classList.remove('show');
-  }, 2800);
+if (!toastEl) return;
+toastEl.textContent = message;
+toastEl.classList.add('show');
+clearTimeout(toastTimer);
+toastTimer = setTimeout(() => {
+toastEl.classList.remove('show');
+}, 3400);
 }
-
 // Отрисовка верхней панели навигации
 function renderUserPanel() {
-  const panelEl = document.getElementById('user-panel');
-  if (!panelEl) return;
-
-  panelEl.innerHTML = '';
-
-  if (!sharedStudent) {
-    const authLinks = createEl('div', 'nav-auth-links');
-
-    const loginLink = createEl('a', 'btn-login-nav', 'Войти');
-    loginLink.href = 'login.html';
-    loginLink.style.textDecoration = 'none';
-
-    const regLink = createEl('a', 'btn-register-nav', 'Регистрация');
-    regLink.href = 'register.html';
-
-    authLinks.appendChild(loginLink);
-    authLinks.appendChild(regLink);
-    panelEl.appendChild(authLinks);
-    return;
-  }
-
-  const bonusPill = createEl('a', 'bonus-pill', '🪙 ' + sharedStudent.shaburyata + ' Шабурят');
-  bonusPill.href = 'profile.html';
-  bonusPill.style.textDecoration = 'none';
-  panelEl.appendChild(bonusPill);
-
-  const profileChip = createEl('a', 'profile-link-chip', '👤 ' + sharedStudent.name);
-  profileChip.href = 'profile.html';
-  panelEl.appendChild(profileChip);
+const panelEl = document.getElementById('user-panel');
+if (!panelEl) return;
+panelEl.innerHTML = '';
+if (!sharedStudent) {
+const authLinks = createEl('div', 'nav-auth-links');
+const loginLink = createEl('a', 'btn-login-nav', 'Войти');
+loginLink.href = 'login.html';
+loginLink.style.textDecoration = 'none';
+const regLink = createEl('a', 'btn-register-nav', 'Регистрация');
+regLink.href = 'register.html';
+authLinks.appendChild(loginLink);
+authLinks.appendChild(regLink);
+panelEl.appendChild(authLinks);
+return;
 }
-
+const bonusPill = createEl('a', 'bonus-pill', '🪙 ' + sharedStudent.shaburyata + ' Шабурят');
+bonusPill.href = 'profile.html';
+bonusPill.style.textDecoration = 'none';
+panelEl.appendChild(bonusPill);
+const profileChip = createEl('a', 'profile-link-chip', '👤 ' + sharedStudent.name);
+profileChip.href = 'profile.html';
+panelEl.appendChild(profileChip);
+}
 function updateCounters() {
-  const regIds = sharedStudent ? hubState.registeredIds : Array.of();
-  const upcomingCount = EVENTS_DATA.filter(e => !e.isPast && regIds.includes(e.id)).length;
-
-  if (navRegCountEl) {
-    navRegCountEl.textContent = upcomingCount;
-    navRegCountEl.style.display = upcomingCount > 0 ? 'inline-block' : 'none';
-  }
-  const segUpcomingEl = document.getElementById('seg-upcoming');
-  if (segUpcomingEl) {
-    segUpcomingEl.textContent = 'Предстоящие • ' + upcomingCount;
-  }
+const regIds = sharedStudent ? hubState.registeredIds : Array.of();
+const upcomingCount = EVENTS_DATA.filter(e => !e.isPast && regIds.includes(e.id)).length;
+if (navRegCountEl) {
+navRegCountEl.textContent = upcomingCount;
+navRegCountEl.style.display = upcomingCount > 0 ? 'inline-block' : 'none';
 }
-
-// Вход или регистрация с синхронизацией в общий ключ studentProfile
+const segUpcomingEl = document.getElementById('seg-upcoming');
+if (segUpcomingEl) {
+segUpcomingEl.textContent = 'Предстоящие • ' + upcomingCount;
+}
+}
 function syncLoginOrRegister(name, group, contact) {
-  const cleanName = name.trim();
-  const cleanGroup = group.trim().toUpperCase();
-  if (!cleanName || !cleanGroup) return;
-
-  if (sharedStudent && sharedStudent.name.toLowerCase() === cleanName.toLowerCase()) {
-    sharedStudent.group = cleanGroup;
-    if (contact) sharedStudent.contact = contact.trim();
-  } else {
-    sharedStudent = {
-      id: 'st_' + Date.now(),
-      name: cleanName,
-      group: cleanGroup,
-      specialty: 'Центр программирования и кибербезопасности · поток Альфа',
-      program: '09.02.07 Информационные системы и программирование',
-      status: 'active',
-      photo: null,
-      contact: contact ? contact.trim() : '',
-      shaburyata: 0,
-      transactions: Array.of()
-    };
-hubState = { registeredIds: Array.of(), attendedIds: Array.of() };
+const cleanName = name.trim();
+const cleanGroup = group.trim().toUpperCase();
+if (!cleanName || !cleanGroup) return;
+if (sharedStudent && sharedStudent.name.toLowerCase() === cleanName.toLowerCase()) {
+sharedStudent.group = cleanGroup;
+if (contact) sharedStudent.contact = contact.trim();
+} else {
+sharedStudent = {
+id: 'st_' + Date.now(),
+name: cleanName,
+group: cleanGroup,
+specialty: 'Центр программирования и кибербезопасности · поток Альфа',
+program: '09.02.07 Информационные системы и программирование',
+status: 'active',
+photo: null,
+contact: contact ? contact.trim() : '',
+shaburyata: 0,
+transactions: Array.of()
+};
+hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
 }
 saveIntegratedStorage();
 window.location.href = 'profile.html';
 }
 function logoutUser() {
 sharedStudent = null;
-hubState = { registeredIds: Array.of(), attendedIds: Array.of() };
+hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
 saveIntegratedStorage();
 window.location.href = 'login.html';
 }
@@ -321,14 +485,16 @@ const initials =
 document.getElementById('profile-avatar').textContent = initials.toUpperCase() || 'СТ';
 profileNameEl.textContent = sharedStudent.name;
 document.getElementById('profile-group').textContent = 'Группа: ' + sharedStudent.group;
-const statusLabels = {
-active: 'Активен',
-suspended: 'Приостановлен',
-graduated: 'Выпускник'
-};
-const statusText = statusLabels[sharedStudent.status] || sharedStudent.status;
+const activeCabins = Object.values(hubState.cabinBookingsByEvent || {});
+const cabinsSummary =
+activeCabins.length > 0
+? ' • Бронь: ' + activeCabins.map(c => c.roomName + ' (' + c.time + ')').join(', ')
+: '';
 document.getElementById('profile-contact').textContent =
-(sharedStudent.contact ? sharedStudent.contact + ' • ' : '') + 'Статус: ' + statusText;
+(sharedStudent.contact ? sharedStudent.contact + ' • ' : '') +
+'Статус: ' +
+sharedStudent.status +
+cabinsSummary;
 document.getElementById('stat-reg-count').textContent = hubState.registeredIds.length;
 document.getElementById('stat-att-count').textContent = hubState.attendedIds.length;
 const limits = getWeeklyEarnedStats();
@@ -423,9 +589,10 @@ if (permission === 'granted') setupTimers();
 function exportDatabaseJSON() {
 const dbSnapshot = {
 exportedAt: new Date().toISOString(),
-platform: 'College Platform — Хакатон Хаб + Электронный студенческий',
+platform: 'College Platform — Хакатон Хаб + Электронный студенческий + Бронь Кабинки',
 studentProfile: sharedStudent,
 hackathonHubState: hubState,
+cabinBookings: JSON.parse(localStorage.getItem(CABINS_BOOKINGS_KEY) || '[]'),
 events: EVENTS_DATA
 };
 const blob = new Blob(Array.of(JSON.stringify(dbSnapshot, null, 2)), {
@@ -447,6 +614,7 @@ feedView.classList.toggle('active', viewName === 'feed');
 detailsView.classList.toggle('active', viewName === 'details');
 window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+// Запись или отмена регистрации + автоматическая бронь кабинки для хакатона
 function toggleRegistration(eventId, e) {
 if (e) e.stopPropagation();
 if (!sharedStudent) {
@@ -457,11 +625,33 @@ const event = EVENTS_DATA.find(item => item.id === eventId);
 if (!event) return;
 if (hubState.registeredIds.includes(eventId)) {
 hubState.registeredIds = hubState.registeredIds.filter(id => id !== eventId);
+if (event.cabinConfig) {
+cancelCabinForHackathon(eventId);
+showToast('Запись отменена, бронь ' + event.cabinConfig.roomName + ' снята');
+} else {
 showToast('Регистрация на «' + event.title + '» отменена');
+}
 } else {
 hubState.registeredIds.push(eventId);
 scheduleEventNotifications(event);
+if (event.cabinConfig) {
+const booking = bookCabinForHackathon(event);
+if (booking) {
+showToast(
+'Вы записаны! Забронирована ' +
+booking.roomName +
+' (' +
+booking.floor +
+' этаж, ' +
+booking.time +
+') на ваш профиль 🏫'
+);
+} else {
+showToast('Вы записаны на хакатон! (Свободных слотов в кабинке уже нет)');
+}
+} else {
 showToast('Вы записаны! Подтвердите посещение, чтобы получить +10 Шабурят');
+}
 }
 saveIntegratedStorage();
 renderUserPanel();
@@ -473,7 +663,6 @@ if (detailsView && detailsView.classList.contains('active') && selectedEventId =
 openEventDetails(eventId);
 }
 }
-// Начисление +10 Шабурят в единый кошелёк studentProfile
 function confirmAttendance(eventId, e) {
 if (e) e.stopPropagation();
 if (!sharedStudent) {
@@ -520,7 +709,9 @@ card.addEventListener('click', () => openEventDetails(event.id));
 const topWrap = createEl('div');
 const topRow = createEl('div', 'card-top-row');
 topRow.appendChild(createEl('span', 'card-tag', event.category.toUpperCase()));
-topRow.appendChild(createEl('span', 'card-bonus-badge', '+10 🪙'));
+topRow.appendChild(
+createEl('span', 'card-bonus-badge', event.cabinConfig ? '+10 🪙 • 🏫 Кабинка' : '+10 🪙')
+);
 topWrap.appendChild(topRow);
 topWrap.appendChild(createEl('h2', 'card-title', event.title));
 topWrap.appendChild(createEl('p', 'card-desc', event.shortDesc));
@@ -595,6 +786,7 @@ const event = EVENTS_DATA.find(item => item.id === eventId);
 if (!event) return;
 selectedEventId = eventId;
 const isReg = sharedStudent ? hubState.registeredIds.includes(eventId) : false;
+const bookedCabin = hubState.cabinBookingsByEvent[eventId];
 document.getElementById('detail-tag').textContent = event.tagFull;
 document.getElementById('detail-title').textContent = event.title;
 document.getElementById('detail-entry').textContent = event.entry;
@@ -613,17 +805,22 @@ if (isReg) {
 ctaBtn.classList.add('registered');
 ctaText.textContent = '✓ Вы записаны (нажмите для отмены)';
 ctaArrow.style.display = 'none';
-ctaCaption.textContent = 'Подтвердите посещение во вкладке «Мои регистрации» для получения +10 Шабурят';
+ctaCaption.textContent = bookedCabin
+? 'За вами забронирована ' + bookedCabin.roomName + ' (' + bookedCabin.time + ')'
+: 'Подтвердите посещение во вкладке «Мои регистрации» для получения +10 Шабурят';
 } else {
 ctaBtn.classList.remove('registered');
 ctaText.textContent = 'Записаться';
 ctaArrow.style.display = 'inline';
-ctaCaption.textContent = 'Бонус +10 Шабурят начислится после подтверждения посещения';
+ctaCaption.textContent = event.cabinConfig
+? 'При записи автоматически забронируется ' + event.cabinConfig.roomName + ' на ваш профиль'
+: 'Бонус +10 Шабурят начислится после подтверждения посещения';
 }
 switchFeedOrDetails('details');
 }
 function buildRegistrationCard(event) {
 const isAttended = sharedStudent ? hubState.attendedIds.includes(event.id) : false;
+const bookedCabin = hubState.cabinBookingsByEvent[event.id];
 const card = createEl('article', 'event-card');
 card.addEventListener('click', () => openEventDetails(event.id));
 const topWrap = createEl('div');
@@ -638,6 +835,17 @@ topWrap.appendChild(createEl('p', 'card-desc', event.shortDesc));
 const metaList = createEl('div', 'card-meta-list compact');
 metaList.appendChild(createEl('div', 'meta-item', '📅 ' + event.dateOnly + ' • ' + event.timeRange));
 metaList.appendChild(createEl('div', 'meta-item', '📍 ' + event.location));
+// Показываем статус автоматической брони кабинки для хакатона
+if (bookedCabin) {
+const cabinInfo = createEl(
+'div',
+'meta-item',
+'🏫 Авто-бронь: ' + bookedCabin.roomName + ' (' + bookedCabin.floor + ' этаж, ' + bookedCabin.time + ')'
+);
+cabinInfo.style.color = 'var(--success-text)';
+cabinInfo.style.fontWeight = '600';
+metaList.appendChild(cabinInfo);
+}
 topWrap.appendChild(metaList);
 topWrap.appendChild(createEl('div', 'organizer reg-organizer', event.organizer));
 if (!event.isPast) {
@@ -713,7 +921,6 @@ updateCounters();
 renderFeed();
 renderRegistrations();
 renderProfilePage();
-// Форма на странице login.html
 const loginForm = document.getElementById('page-login-form');
 if (loginForm) {
 loginForm.addEventListener('submit', e => {
@@ -725,13 +932,11 @@ document.getElementById('login-group').value,
 );
 });
 }
-// Демо-кнопки на странице login.html
 document.querySelectorAll('.demo-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 syncLoginOrRegister(btn.dataset.name, btn.dataset.group, '');
 });
 });
-// Форма на странице register.html
 const registerForm = document.getElementById('page-register-form');
 if (registerForm) {
 registerForm.addEventListener('submit', e => {
@@ -743,7 +948,6 @@ document.getElementById('reg-email').value
 );
 });
 }
-// Кнопки на странице profile.html
 const pageLogoutBtn = document.getElementById('btn-page-logout');
 if (pageLogoutBtn) {
 pageLogoutBtn.addEventListener('click', logoutUser);
@@ -752,7 +956,6 @@ const profileExportBtn = document.getElementById('btn-profile-export');
 if (profileExportBtn) {
 profileExportBtn.addEventListener('click', exportDatabaseJSON);
 }
-// Поиск и фильтры на главной
 const searchInput = document.getElementById('search-input');
 if (searchInput) {
 searchInput.addEventListener('input', e => {
@@ -781,7 +984,6 @@ detailCtaBtn.addEventListener('click', () => {
 toggleRegistration(selectedEventId);
 });
 }
-// Кнопка теста уведомлений на странице события
 const reminderCard = document.querySelector('.reminder-card');
 if (reminderCard) {
 const testNotifyBtn = createEl(
