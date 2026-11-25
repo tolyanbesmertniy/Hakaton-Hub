@@ -1363,3 +1363,7 @@ text-align: center;
     grid-template-columns: 1fr;
   }
 }
+.student-card-meta { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; padding: 12px; background-color: var(--bg-app); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
+.meta-block { display: flex; flex-direction: column; gap: 2px; }
+.meta-block-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+.meta-block-val { font-size: 12.5px; color: var(--text-primary); font-weight: 500; }

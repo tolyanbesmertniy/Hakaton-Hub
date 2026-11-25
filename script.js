@@ -162,13 +162,27 @@ const BONUS_PER_VISIT = 10;
 const SERVICE_WEEKLY_LIMIT = 20;
 const GLOBAL_WEEKLY_LIMIT = 60;
 
-// Ключи единого хранилища («Электронный студенческий» + «Хакатон Хаб» + «Бронь Кабинки»)
+// Ключи единого хранилища («Электронный студенческий» Команды 5 + «Бронь Кабинки» Команды 2)
 const SHARED_PROFILE_KEY = 'studentProfile';
 const HUB_STATE_KEY = 'hackathon_hub_events_state';
+const HUB_LOGGED_OUT_KEY = 'hackathon_hub_logged_out';
 const CABINS_ROOMS_KEY = 'it_moscow_rooms';
 const CABINS_BOOKINGS_KEY = 'it_moscow_bookings';
 
-// Базовая структура кабинок Команды 2 (на случай, если сервис «Бронь Кабинки» ещё не открывался)
+// Эталонный профиль из базы Электронного студенческого (Команда 5)
+const MASTER_STUDENT_FALLBACK = {
+  id: 'st_001',
+  name: 'Маслов Максим',
+  group: '2ИП-7-25',
+  specialty: 'Центр программирования и кибербезопасности · поток Альфа',
+  program: '09.02.07 Информационные системы и программирование',
+  status: 'active',
+  photo: null,
+  shaburyata: 0,
+  transactions: Array.of()
+};
+
+// Базовая структура кабинок Команды 2 (если сервис «Бронь Кабинки» ещё не открывался)
 const FALLBACK_CABINS_DB = {
   1: Array.of(
     {
@@ -228,28 +242,38 @@ let sharedStudent = null;
 let hubState = {
   registeredIds: Array.of(),
   attendedIds: Array.of(),
-  cabinBookingsByEvent: {} // { eventId: bookingId }
+  cabinBookingsByEvent: {}
 };
 
+// Загрузка единого профиля из «Электронного студенческого» и состояния Хакатон Хаба
 function loadIntegratedStorage() {
+  const isLoggedOut = localStorage.getItem(HUB_LOGGED_OUT_KEY) === 'true';
+
   try {
-    const rawShared = localStorage.getItem(SHARED_PROFILE_KEY);
-    if (rawShared) {
+    let rawShared = localStorage.getItem(SHARED_PROFILE_KEY);
+
+    if (!rawShared) {
+      localStorage.setItem(SHARED_PROFILE_KEY, JSON.stringify(MASTER_STUDENT_FALLBACK));
+      rawShared = JSON.stringify(MASTER_STUDENT_FALLBACK);
+    }
+
+    if (!isLoggedOut && rawShared) {
       const parsed = JSON.parse(rawShared);
       if (parsed && parsed.name) {
         sharedStudent = {
           id: parsed.id || 'st_001',
           name: parsed.name,
           group: parsed.group || '2ИП-7-25',
-          specialty: parsed.specialty || 'Центр программирования и кибербезопасности · поток Альфа',
-          program: parsed.program || '09.02.07 Информационные системы и программирование',
+          specialty: parsed.specialty || MASTER_STUDENT_FALLBACK.specialty,
+          program: parsed.program || MASTER_STUDENT_FALLBACK.program,
           status: parsed.status || 'active',
           photo: parsed.photo || null,
-          contact: parsed.contact || '',
           shaburyata: typeof parsed.shaburyata === 'number' ? parsed.shaburyata : 0,
           transactions: Array.isArray(parsed.transactions) ? parsed.transactions : Array.of()
         };
       }
+    } else {
+      sharedStudent = null;
     }
   } catch (e) {
     sharedStudent = null;
@@ -260,28 +284,25 @@ function loadIntegratedStorage() {
     if (rawHub && typeof rawHub === 'object') {
       hubState.registeredIds = Array.isArray(rawHub.registeredIds) ? rawHub.registeredIds : Array.of();
       hubState.attendedIds = Array.isArray(rawHub.attendedIds) ? rawHub.attendedIds : Array.of();
-      hubState.cabinBookingsByEvent =
-        rawHub.cabinBookingsByEvent && typeof rawHub.cabinBookingsByEvent === 'object'
-          ? rawHub.cabinBookingsByEvent
-          : {};
-    }
-  } catch (e) {
-    hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
-  }
+hubState.cabinBookingsByEvent =
+rawHub.cabinBookingsByEvent && typeof rawHub.cabinBookingsByEvent === 'object'
+? rawHub.cabinBookingsByEvent
+: {};
 }
-
+} catch (e) {
+hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
+}
+}
 function saveIntegratedStorage() {
-  if (sharedStudent) {
-    localStorage.setItem(SHARED_PROFILE_KEY, JSON.stringify(sharedStudent));
-  } else {
-    localStorage.removeItem(SHARED_PROFILE_KEY);
-  }
-  localStorage.setItem(HUB_STATE_KEY, JSON.stringify(hubState));
+if (sharedStudent) {
+localStorage.setItem(SHARED_PROFILE_KEY, JSON.stringify(sharedStudent));
+localStorage.removeItem(HUB_LOGGED_OUT_KEY);
 }
-
+localStorage.setItem(HUB_STATE_KEY, JSON.stringify(hubState));
+}
 // ================= ИНТЕГРАЦИЯ С СЕРВИСОМ «БРОНЬ КАБИНКИ» (Команда 2) =================
 function bookCabinForHackathon(event) {
-  if (!event.cabinConfig || !sharedStudent) return null;
+if (!event.cabinConfig || !sharedStudent) return null;
 let roomsDb = null;
 let userBookings = Array.of();
 try {
@@ -302,7 +323,6 @@ const cfg = event.cabinConfig;
 const floorRooms = roomsDb[cfg.floor] || Array.of();
 const room = floorRooms.find(r => r.id === cfg.roomId);
 if (!room || !Array.isArray(room.slots)) return null;
-// Ищем предпочтительный слот или первый свободный слот в этой кабинке
 let targetSlot = room.slots.find(s => s.time === cfg.preferredTime && s.status === 'free');
 if (!targetSlot) {
 targetSlot = room.slots.find(s => s.status === 'free');
@@ -354,12 +374,10 @@ if (Array.isArray(userBookings)) {
 const updatedBookings = userBookings.filter(b => b.id !== savedBooking.id);
 localStorage.setItem(CABINS_BOOKINGS_KEY, JSON.stringify(updatedBookings));
 }
-} catch (e) {
-// игнорируем ошибки парсинга
-}
+} catch (e) {}
 delete hubState.cabinBookingsByEvent[eventId];
 }
-// Подсчёт заработанных за последние 7 дней Шабурят
+// Подсчёт заработанных за последние 7 дней Шабурят по транзакциям Команды 5
 function getWeeklyEarnedStats() {
 if (!sharedStudent || !Array.isArray(sharedStudent.transactions)) {
 return { serviceWeekly: 0, totalWeekly: 0 };
@@ -409,15 +427,10 @@ const panelEl = document.getElementById('user-panel');
 if (!panelEl) return;
 panelEl.innerHTML = '';
 if (!sharedStudent) {
-const authLinks = createEl('div', 'nav-auth-links');
-const loginLink = createEl('a', 'btn-login-nav', 'Войти');
+const loginLink = createEl('a', 'btn-login-nav', '🪪 Войти по студенческому');
 loginLink.href = 'login.html';
 loginLink.style.textDecoration = 'none';
-const regLink = createEl('a', 'btn-register-nav', 'Регистрация');
-regLink.href = 'register.html';
-authLinks.appendChild(loginLink);
-authLinks.appendChild(regLink);
-panelEl.appendChild(authLinks);
+panelEl.appendChild(loginLink);
 return;
 }
 const bonusPill = createEl('a', 'bonus-pill', '🪙 ' + sharedStudent.shaburyata + ' Шабурят');
@@ -440,38 +453,42 @@ if (segUpcomingEl) {
 segUpcomingEl.textContent = 'Предстоящие • ' + upcomingCount;
 }
 }
-function syncLoginOrRegister(name, group, contact) {
-const cleanName = name.trim();
-const cleanGroup = group.trim().toUpperCase();
-if (!cleanName || !cleanGroup) return;
-if (sharedStudent && sharedStudent.name.toLowerCase() === cleanName.toLowerCase()) {
-sharedStudent.group = cleanGroup;
-if (contact) sharedStudent.contact = contact.trim();
-} else {
-sharedStudent = {
-id: 'st_' + Date.now(),
-name: cleanName,
-group: cleanGroup,
-specialty: 'Центр программирования и кибербезопасности · поток Альфа',
-program: '09.02.07 Информационные системы и программирование',
-status: 'active',
-photo: null,
-contact: contact ? contact.trim() : '',
-shaburyata: 0,
-transactions: Array.of()
-};
-hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
+// Вход с проверкой профиля из «Электронного студенческого»
+function loginFromStudentCard(nameInput, groupInput) {
+let masterData = null;
+try {
+masterData = JSON.parse(localStorage.getItem(SHARED_PROFILE_KEY));
+} catch (e) {
+masterData = null;
 }
-saveIntegratedStorage();
+if (!masterData) masterData = MASTER_STUDENT_FALLBACK;
+if (nameInput && groupInput) {
+const cleanName = nameInput.trim().toLowerCase();
+const cleanGroup = groupInput.trim().toUpperCase();
+if (
+masterData.name.trim().toLowerCase() !== cleanName ||
+masterData.group.trim().toUpperCase() !== cleanGroup
+) {
+showToast(
+'Профиль не найден в базе Электронного студенческого. Доступен студент: ' +
+masterData.name +
+' (' +
+masterData.group +
+')'
+);
+return;
+}
+}
+localStorage.removeItem(HUB_LOGGED_OUT_KEY);
+loadIntegratedStorage();
 window.location.href = 'profile.html';
 }
 function logoutUser() {
 sharedStudent = null;
-hubState = { registeredIds: Array.of(), attendedIds: Array.of(), cabinBookingsByEvent: {} };
-saveIntegratedStorage();
+localStorage.setItem(HUB_LOGGED_OUT_KEY, 'true');
 window.location.href = 'login.html';
 }
-// Рендер страницы профиля (profile.html)
+// Рендер страницы профиля (profile.html) с данными из Команды 5
 function renderProfilePage() {
 const profileNameEl = document.getElementById('profile-name');
 if (!profileNameEl) return;
@@ -484,17 +501,26 @@ const initials =
 (parts.at(0) ? parts.at(0).charAt(0) : '') + (parts.at(1) ? parts.at(1).charAt(0) : '');
 document.getElementById('profile-avatar').textContent = initials.toUpperCase() || 'СТ';
 profileNameEl.textContent = sharedStudent.name;
-document.getElementById('profile-group').textContent = 'Группа: ' + sharedStudent.group;
+document.getElementById('profile-group').textContent = 'Студент • ' + sharedStudent.group;
+const statusLabels = {
+active: 'Статус: Активен ✅',
+suspended: 'Статус: Приостановлен ⛔',
+graduated: 'Статус: Выпускник 🎓'
+};
 const activeCabins = Object.values(hubState.cabinBookingsByEvent || {});
 const cabinsSummary =
 activeCabins.length > 0
 ? ' • Бронь: ' + activeCabins.map(c => c.roomName + ' (' + c.time + ')').join(', ')
 : '';
-document.getElementById('profile-contact').textContent =
-(sharedStudent.contact ? sharedStudent.contact + ' • ' : '') +
-'Статус: ' +
-sharedStudent.status +
-cabinsSummary;
+const statusEl = document.getElementById('profile-status-line') || document.getElementById('profile-contact');
+if (statusEl) {
+statusEl.textContent =
+(statusLabels[sharedStudent.status] || 'Статус: ' + sharedStudent.status) + cabinsSummary;
+}
+const specEl = document.getElementById('profile-specialty');
+if (specEl) specEl.textContent = sharedStudent.specialty;
+const progEl = document.getElementById('profile-program');
+if (progEl) progEl.textContent = sharedStudent.program;
 document.getElementById('stat-reg-count').textContent = hubState.registeredIds.length;
 document.getElementById('stat-att-count').textContent = hubState.attendedIds.length;
 const limits = getWeeklyEarnedStats();
@@ -507,7 +533,7 @@ const historyListEl = document.getElementById('wallet-history-list');
 historyListEl.innerHTML = '';
 if (!sharedStudent.transactions || sharedStudent.transactions.length === 0) {
 historyListEl.appendChild(
-createEl('div', 'empty-state', 'Пока нет операций. Посетите мероприятие, чтобы получить +10 Шабурят!')
+createEl('div', 'empty-state', 'Пока нет операций в едином кошельке')
 );
 } else {
 const sortedTxs = sharedStudent.transactions
@@ -663,6 +689,7 @@ if (detailsView && detailsView.classList.contains('active') && selectedEventId =
 openEventDetails(eventId);
 }
 }
+// Начисление +10 Шабурят в единый кошелёк studentProfile
 function confirmAttendance(eventId, e) {
 if (e) e.stopPropagation();
 if (!sharedStudent) {
@@ -835,7 +862,6 @@ topWrap.appendChild(createEl('p', 'card-desc', event.shortDesc));
 const metaList = createEl('div', 'card-meta-list compact');
 metaList.appendChild(createEl('div', 'meta-item', '📅 ' + event.dateOnly + ' • ' + event.timeRange));
 metaList.appendChild(createEl('div', 'meta-item', '📍 ' + event.location));
-// Показываем статус автоматической брони кабинки для хакатона
 if (bookedCabin) {
 const cabinInfo = createEl(
 'div',
@@ -888,9 +914,9 @@ registrationsListEl.innerHTML = '';
 if (!sharedStudent) {
 const loginPrompt = createEl('div', 'empty-state');
 loginPrompt.appendChild(
-createEl('p', '', 'Войдите в единую учётную запись, чтобы видеть свои регистрации и копить Шабурята.')
+createEl('p', '', 'Войдите через Электронный студенческий, чтобы видеть свои регистрации и копить Шабурята.')
 );
-const btn = createEl('a', 'btn-login-nav', 'Перейти ко входу');
+const btn = createEl('a', 'btn-login-nav', '🪪 Войти по студенческому');
 btn.href = 'login.html';
 btn.style.display = 'inline-block';
 btn.style.marginTop = '14px';
@@ -921,33 +947,30 @@ updateCounters();
 renderFeed();
 renderRegistrations();
 renderProfilePage();
+// Форма входа по данным из Электронного студенческого
 const loginForm = document.getElementById('page-login-form');
 if (loginForm) {
 loginForm.addEventListener('submit', e => {
 e.preventDefault();
-syncLoginOrRegister(
+loginFromStudentCard(
 document.getElementById('login-name').value,
-document.getElementById('login-group').value,
-''
+document.getElementById('login-group').value
 );
 });
 }
-document.querySelectorAll('.demo-btn').forEach(btn => {
-btn.addEventListener('click', () => {
-syncLoginOrRegister(btn.dataset.name, btn.dataset.group, '');
-});
-});
-const registerForm = document.getElementById('page-register-form');
-if (registerForm) {
-registerForm.addEventListener('submit', e => {
-e.preventDefault();
-syncLoginOrRegister(
-document.getElementById('reg-name').value,
-document.getElementById('reg-group').value,
-document.getElementById('reg-email').value
-);
+// Кнопка быстрого входа из базы Электронного студенческого (Команда 5)
+const syncStudentBtn = document.getElementById('btn-sync-student-card');
+if (syncStudentBtn) {
+try {
+const sp = JSON.parse(localStorage.getItem(SHARED_PROFILE_KEY)) || MASTER_STUDENT_FALLBACK;
+syncStudentBtn.textContent =
+'🪪 Войти как ' + sp.name + ' (' + sp.group + ' • ' + (sp.shaburyata || 0) + ' 🪙)';
+} catch (e) {}
+syncStudentBtn.addEventListener('click', () => {
+loginFromStudentCard(null, null);
 });
 }
+// Кнопки на странице profile.html
 const pageLogoutBtn = document.getElementById('btn-page-logout');
 if (pageLogoutBtn) {
 pageLogoutBtn.addEventListener('click', logoutUser);
@@ -956,6 +979,7 @@ const profileExportBtn = document.getElementById('btn-profile-export');
 if (profileExportBtn) {
 profileExportBtn.addEventListener('click', exportDatabaseJSON);
 }
+// Поиск и фильтры на главной
 const searchInput = document.getElementById('search-input');
 if (searchInput) {
 searchInput.addEventListener('input', e => {
@@ -984,6 +1008,7 @@ detailCtaBtn.addEventListener('click', () => {
 toggleRegistration(selectedEventId);
 });
 }
+// Кнопка теста уведомлений на странице события
 const reminderCard = document.querySelector('.reminder-card');
 if (reminderCard) {
 const testNotifyBtn = createEl(
@@ -1015,3 +1040,100 @@ if (eventParam && document.getElementById('view-details')) {
 openEventDetails(eventParam);
 }
 });
+// ================= ПОЛНАЯ КОПИЯ ПРОФИЛЯ И QR-КОДА КОМАНДЫ 5 =================
+let scQrTimerInterval = null;
+let scSecondsLeft = 60;
+
+function renderProfilePage() {
+  const nameEl = document.getElementById('studentName');
+  if (!nameEl) return;
+
+  if (!sharedStudent) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Аватар с инициалами как у Команды 5
+  const initials = sharedStudent.name
+    .split(' ')
+    .map(w => w.charAt(0))
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+  const avatarEl = document.getElementById('avatar');
+  if (avatarEl) avatarEl.textContent = initials || 'СТ';
+
+  nameEl.textContent = sharedStudent.name;
+  document.getElementById('group').textContent = 'Студент · 2 курс · ' + sharedStudent.group;
+  document.getElementById('specialty').textContent = sharedStudent.specialty;
+  document.getElementById('program').textContent = sharedStudent.program;
+
+  // Статус студента (Активен / Приостановлен / Выпускник)
+  const badge = document.getElementById('statusBadge');
+  if (badge) {
+    const statusMap = {
+      active: 'Статус: Активен',
+      suspended: 'Статус: Приостановлен',
+      graduated: 'Статус: Выпускник'
+    };
+    badge.textContent = statusMap[sharedStudent.status] || 'Статус: Неизвестно';
+    badge.style.background =
+      sharedStudent.status === 'active'
+        ? 'rgba(0, 212, 170, 0.15)'
+        : 'rgba(255, 77, 109, 0.15)';
+    badge.style.color = sharedStudent.status === 'active' ? '#00d4aa' : '#ff4d6d';
+  }
+
+  // Баланс и лимиты
+  document.getElementById('shaburyataBalance').textContent = sharedStudent.shaburyata;
+
+  const limits = getWeeklyEarnedStats();
+  document.getElementById('wallet-service-limit').textContent =
+    limits.serviceWeekly + ' / ' + SERVICE_WEEKLY_LIMIT + ' Шабурят';
+  document.getElementById('wallet-total-limit').textContent =
+    limits.totalWeekly + ' / ' + GLOBAL_WEEKLY_LIMIT + ' Шабурят';
+
+  // Забронированные кабинки Команды 2
+  const activeCabins = Object.values(hubState.cabinBookingsByEvent || {});
+  const cabinsInfoEl = document.getElementById('profile-cabins-info');
+  if (cabinsInfoEl) {
+    cabinsInfoEl.textContent =
+      activeCabins.length > 0
+        ? activeCabins.map(c => c.roomName + ' (' + c.time + ')').join(', ')
+        : 'Нет активных броней';
+  }
+
+  // История операций в стиле Команды 5
+  const historyEl = document.getElementById('walletHistory');
+  if (historyEl) {
+    historyEl.innerHTML = '';
+    if (!sharedStudent.transactions || sharedStudent.transactions.length === 0) {
+      historyEl.appendChild(createEl('p', 'sc-meta', 'Пока нет операций'));
+    } else {
+      const sorted = sharedStudent.transactions
+        .slice()
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10);
+
+      sorted.forEach(tx => {
+        const item = createEl('div', 'sc-tx-item');
+        const main = createEl('div');
+        main.appendChild(createEl('div', 'sc-tx-reason', tx.reason));
+
+        const d = new Date(tx.date);
+        const dateStr = isNaN(d.getTime())
+          ? String(tx.date)
+          : d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' });
+        main.appendChild(createEl('div', 'sc-tx-date', dateStr));
+
+        const sign = tx.type === 'credit' ? '+' : '−';
+        const amountEl = createEl('div', 'sc-tx-amount', sign + tx.amount + ' Ш');
+        if (tx.type === 'debit') amountEl.classList.add('debit');
+
+        item.appendChild(main);
+        item.appendChild(amountEl);
+        historyEl.appendChild(item);
+      });
+    }
+  }
+}
