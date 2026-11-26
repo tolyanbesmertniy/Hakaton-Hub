@@ -488,75 +488,81 @@ sharedStudent = null;
 localStorage.setItem(HUB_LOGGED_OUT_KEY, 'true');
 window.location.href = 'login.html';
 }
-// Рендер страницы профиля (profile.html) с данными из Команды 5
+// Рендер страницы профиля (profile.html) с данными из Команды 5 (без перезаписи картинки QR)
 function renderProfilePage() {
-const profileNameEl = document.getElementById('profile-name');
-if (!profileNameEl) return;
+const nameEl = document.getElementById('studentName');
+if (!nameEl) return;
 if (!sharedStudent) {
 window.location.href = 'login.html';
 return;
 }
-const parts = sharedStudent.name.split(' ');
-const initials =
-(parts.at(0) ? parts.at(0).charAt(0) : '') + (parts.at(1) ? parts.at(1).charAt(0) : '');
-document.getElementById('profile-avatar').textContent = initials.toUpperCase() || 'СТ';
-profileNameEl.textContent = sharedStudent.name;
-document.getElementById('profile-group').textContent = 'Студент • ' + sharedStudent.group;
-const statusLabels = {
-active: 'Статус: Активен ✅',
-suspended: 'Статус: Приостановлен ⛔',
-graduated: 'Статус: Выпускник 🎓'
+const initials = sharedStudent.name
+.split(' ')
+.map(w => w.charAt(0))
+.join('')
+.slice(0, 2)
+.toUpperCase();
+const avatarEl = document.getElementById('avatar');
+if (avatarEl) avatarEl.textContent = initials || 'СТ';
+nameEl.textContent = sharedStudent.name;
+document.getElementById('group').textContent = 'Студент · 2 курс · ' + sharedStudent.group;
+document.getElementById('specialty').textContent = sharedStudent.specialty;
+document.getElementById('program').textContent = sharedStudent.program;
+const badge = document.getElementById('statusBadge');
+if (badge) {
+const statusMap = {
+active: 'Статус: Активен',
+suspended: 'Статус: Приостановлен',
+graduated: 'Статус: Выпускник'
 };
-const activeCabins = Object.values(hubState.cabinBookingsByEvent || {});
-const cabinsSummary =
-activeCabins.length > 0
-? ' • Бронь: ' + activeCabins.map(c => c.roomName + ' (' + c.time + ')').join(', ')
-: '';
-const statusEl = document.getElementById('profile-status-line') || document.getElementById('profile-contact');
-if (statusEl) {
-statusEl.textContent =
-(statusLabels[sharedStudent.status] || 'Статус: ' + sharedStudent.status) + cabinsSummary;
+badge.textContent = statusMap[sharedStudent.status] || 'Статус: Неизвестно';
+badge.style.background =
+sharedStudent.status === 'active'
+? 'rgba(0, 212, 170, 0.15)'
+: 'rgba(255, 77, 109, 0.15)';
+badge.style.color = sharedStudent.status === 'active' ? '#00d4aa' : '#ff4d6d';
 }
-const specEl = document.getElementById('profile-specialty');
-if (specEl) specEl.textContent = sharedStudent.specialty;
-const progEl = document.getElementById('profile-program');
-if (progEl) progEl.textContent = sharedStudent.program;
-document.getElementById('stat-reg-count').textContent = hubState.registeredIds.length;
-document.getElementById('stat-att-count').textContent = hubState.attendedIds.length;
+document.getElementById('shaburyataBalance').textContent = sharedStudent.shaburyata;
 const limits = getWeeklyEarnedStats();
-document.getElementById('wallet-balance-num').textContent = sharedStudent.shaburyata + ' 🪙';
 document.getElementById('wallet-service-limit').textContent =
 limits.serviceWeekly + ' / ' + SERVICE_WEEKLY_LIMIT + ' Шабурят';
 document.getElementById('wallet-total-limit').textContent =
 limits.totalWeekly + ' / ' + GLOBAL_WEEKLY_LIMIT + ' Шабурят';
-const historyListEl = document.getElementById('wallet-history-list');
-historyListEl.innerHTML = '';
+const activeCabins = Object.values(hubState.cabinBookingsByEvent || {});
+const cabinsInfoEl = document.getElementById('profile-cabins-info');
+if (cabinsInfoEl) {
+cabinsInfoEl.textContent =
+activeCabins.length > 0
+? activeCabins.map(c => c.roomName + ' (' + c.time + ')').join(', ')
+: 'Нет активных броней';
+}
+const historyEl = document.getElementById('walletHistory');
+if (historyEl) {
+historyEl.innerHTML = '';
 if (!sharedStudent.transactions || sharedStudent.transactions.length === 0) {
-historyListEl.appendChild(
-createEl('div', 'empty-state', 'Пока нет операций в едином кошельке')
-);
+historyEl.appendChild(createEl('p', 'sc-meta', 'Пока нет операций'));
 } else {
-const sortedTxs = sharedStudent.transactions
+const sorted = sharedStudent.transactions
 .slice()
-.sort((a, b) => new Date(b.date) - new Date(a.date));
-sortedTxs.forEach(tx => {
-const row = createEl('div', 'history-item');
-const left = createEl('div');
-left.appendChild(createEl('div', 'history-item-title', tx.reason || 'Операция'));
+.sort((a, b) => new Date(b.date) - new Date(a.date))
+.slice(0, 10);
+sorted.forEach(tx => {
+const item = createEl('div', 'sc-tx-item');
+const main = createEl('div');
+main.appendChild(createEl('div', 'sc-tx-reason', tx.reason));
 const d = new Date(tx.date);
 const dateStr = isNaN(d.getTime())
 ? String(tx.date)
 : d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' });
-left.appendChild(createEl('div', 'history-item-date', dateStr));
-const sign = tx.type === 'debit' ? '−' : '+';
-const right = createEl('div', 'history-item-amount', sign + tx.amount + ' 🪙');
-if (tx.type === 'debit') {
-right.style.color = 'var(--danger-text)';
-}
-row.appendChild(left);
-row.appendChild(right);
-historyListEl.appendChild(row);
+main.appendChild(createEl('div', 'sc-tx-date', dateStr));
+const sign = tx.type === 'credit' ? '+' : '−';
+const amountEl = createEl('div', 'sc-tx-amount', sign + tx.amount + ' Ш');
+if (tx.type === 'debit') amountEl.classList.add('debit');
+item.appendChild(main);
+item.appendChild(amountEl);
+historyEl.appendChild(item);
 });
+}
 }
 }
 // Системные локальные уведомления
@@ -1040,100 +1046,3 @@ if (eventParam && document.getElementById('view-details')) {
 openEventDetails(eventParam);
 }
 });
-// ================= ПОЛНАЯ КОПИЯ ПРОФИЛЯ И QR-КОДА КОМАНДЫ 5 =================
-let scQrTimerInterval = null;
-let scSecondsLeft = 60;
-
-function renderProfilePage() {
-  const nameEl = document.getElementById('studentName');
-  if (!nameEl) return;
-
-  if (!sharedStudent) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  // Аватар с инициалами как у Команды 5
-  const initials = sharedStudent.name
-    .split(' ')
-    .map(w => w.charAt(0))
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-  const avatarEl = document.getElementById('avatar');
-  if (avatarEl) avatarEl.textContent = initials || 'СТ';
-
-  nameEl.textContent = sharedStudent.name;
-  document.getElementById('group').textContent = 'Студент · 2 курс · ' + sharedStudent.group;
-  document.getElementById('specialty').textContent = sharedStudent.specialty;
-  document.getElementById('program').textContent = sharedStudent.program;
-
-  // Статус студента (Активен / Приостановлен / Выпускник)
-  const badge = document.getElementById('statusBadge');
-  if (badge) {
-    const statusMap = {
-      active: 'Статус: Активен',
-      suspended: 'Статус: Приостановлен',
-      graduated: 'Статус: Выпускник'
-    };
-    badge.textContent = statusMap[sharedStudent.status] || 'Статус: Неизвестно';
-    badge.style.background =
-      sharedStudent.status === 'active'
-        ? 'rgba(0, 212, 170, 0.15)'
-        : 'rgba(255, 77, 109, 0.15)';
-    badge.style.color = sharedStudent.status === 'active' ? '#00d4aa' : '#ff4d6d';
-  }
-
-  // Баланс и лимиты
-  document.getElementById('shaburyataBalance').textContent = sharedStudent.shaburyata;
-
-  const limits = getWeeklyEarnedStats();
-  document.getElementById('wallet-service-limit').textContent =
-    limits.serviceWeekly + ' / ' + SERVICE_WEEKLY_LIMIT + ' Шабурят';
-  document.getElementById('wallet-total-limit').textContent =
-    limits.totalWeekly + ' / ' + GLOBAL_WEEKLY_LIMIT + ' Шабурят';
-
-  // Забронированные кабинки Команды 2
-  const activeCabins = Object.values(hubState.cabinBookingsByEvent || {});
-  const cabinsInfoEl = document.getElementById('profile-cabins-info');
-  if (cabinsInfoEl) {
-    cabinsInfoEl.textContent =
-      activeCabins.length > 0
-        ? activeCabins.map(c => c.roomName + ' (' + c.time + ')').join(', ')
-        : 'Нет активных броней';
-  }
-
-  // История операций в стиле Команды 5
-  const historyEl = document.getElementById('walletHistory');
-  if (historyEl) {
-    historyEl.innerHTML = '';
-    if (!sharedStudent.transactions || sharedStudent.transactions.length === 0) {
-      historyEl.appendChild(createEl('p', 'sc-meta', 'Пока нет операций'));
-    } else {
-      const sorted = sharedStudent.transactions
-        .slice()
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 10);
-
-      sorted.forEach(tx => {
-        const item = createEl('div', 'sc-tx-item');
-        const main = createEl('div');
-        main.appendChild(createEl('div', 'sc-tx-reason', tx.reason));
-
-        const d = new Date(tx.date);
-        const dateStr = isNaN(d.getTime())
-          ? String(tx.date)
-          : d.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' });
-        main.appendChild(createEl('div', 'sc-tx-date', dateStr));
-
-        const sign = tx.type === 'credit' ? '+' : '−';
-        const amountEl = createEl('div', 'sc-tx-amount', sign + tx.amount + ' Ш');
-        if (tx.type === 'debit') amountEl.classList.add('debit');
-
-        item.appendChild(main);
-        item.appendChild(amountEl);
-        historyEl.appendChild(item);
-      });
-    }
-  }
-}
